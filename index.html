@@ -239,29 +239,84 @@ function parseConfig(text){const sections=[];let sec=null,stack=[];let meaningfu
 function descendants(node){const all=[];const walk=n=>{for(const c of n.children){all.push(c);walk(c)}};walk(node);return all;}
 function collectRefs(node,key){const refs=[];const add=n=>{const value=lookup(n,key);if(value)refs.push(...value.split(/[; ]+/).filter(x=>/^\d+$/.test(x)));for(const c of n.children){if(has(c,key))add(c);else if(!has(c,'Адрес')&&!has(c,'Шлейф')&&!has(c,'Реле'))add(c)}};add(node);return [...new Set(refs)];}
 function buildModel(parsed){const section=s=>parsed.sections.find(x=>norm(x.name)===norm(s)),types=new Map();for(const n of section('Типы_приборов')?.nodes||[])if(has(n,'Тип_прибора'))types.set(lookup(n,'Тип_прибора'),n);
-const deviceDescription=node=>{const direct=lookup(node,'Описание')||lookup(node,'Название')||lookup(node,'Комментарий')||lookup(node,'Примечание');if(direct)return direct;const note=(node.children||[]).find(n=>has(n,'Описание')&&!has(n,'Шлейф')&&!has(n,'Реле')&&!has(n,'Выход')&&!has(n,'Адрес'));return note?lookup(note,'Описание'):'';};
-const devices=(section('Приборы')?.nodes||[]).filter(n=>has(n,'Адрес')).map(node=>{const address=lookup(node,'Адрес'),typeId=lookup(node,'Тип_прибора'),children=descendants(node),loops=children.filter(n=>has(n,'Шлейф')).map(n=>({node:n,id:lookup(n,'Шлейф'),type:lookup(n,'Тип_шлейфа'),name:lookup(n,'Описание'),partitions:collectRefs(n,'Раздел')})),relays=children.filter(n=>has(n,'Реле')).map(n=>({node:n,id:lookup(n,'Реле'),program:lookup(n,'Программа'),delay:lookup(n,'Задержка включения'),duration:lookup(n,'Время управления'),name:lookup(n,'Описание'),partitions:collectRefs(n,'Раздел')})),outputs=children.filter(n=>has(n,'Выход')).map(n=>({node:n,id:lookup(n,'Выход'),name:lookup(n,'Описание'),type:lookup(n,'Тип_выхода')})),executors=children.filter(n=>has(n,'Исполнительное_устройство')).map(n=>({node:n,id:lookup(n,'Исполнительное_устройство'),name:lookup(n,'Описание'),partitions:collectRefs(n,'Раздел'),structure:'unknown',links:null}));return{node,address,description:deviceDescription(node),typeId,typeName:lookup(types.get(typeId)||{},'Название')||'Тип '+typeId,version:lookup(node,'Версия'),loops,relays,outputs,executors,children}});
-// A composed address device is recognized ONLY when the export contains the
-// executive-unit record and the complete N / N+1 / N+2 / N+3 / N+4 layout.
-// This is a five-address SP4-like structure, not proof of the hardware model.
-// Unknown / partial structures retain their raw records without invented links.
+const deviceDescription=node=>{const direct=lookup(node,'Описание')||lookup(node,'Название')||lookup(node,'Комментарий')||lookup(node,'Примечание');if(direct)return direct;const note=(node.children||[]).find(n=>has(n,'Описание')&&!has(n,'Шлейф')&&!has(n,'Реле')&&!has(n,'Выход')&&!has(n,'Исполнительное_устройство')&&!has(n,'Адрес'));return note?lookup(note,'Описание'):'';};
+const devices=(section('Приборы')?.nodes||[]).filter(n=>has(n,'Адрес')).map(node=>{const address=lookup(node,'Адрес'),typeId=lookup(node,'Тип_прибора'),children=descendants(node),loops=children.filter(n=>has(n,'Шлейф')).map(n=>({node:n,id:lookup(n,'Шлейф'),type:lookup(n,'Тип_шлейфа'),name:lookup(n,'Описание'),partitions:collectRefs(n,'Раздел')})),relays=children.filter(n=>has(n,'Реле')).map(n=>({node:n,id:lookup(n,'Реле'),program:lookup(n,'Программа'),delay:lookup(n,'Задержка включения'),duration:lookup(n,'Время управления'),name:lookup(n,'Описание'),partitions:collectRefs(n,'Раздел')})),outputs=children.filter(n=>has(n,'Выход')).map(n=>({node:n,id:lookup(n,'Выход'),name:lookup(n,'Описание'),type:lookup(n,'Тип_выхода'),partitions:collectRefs(n,'Раздел'),control:null})),executors=children.filter(n=>has(n,'Исполнительное_устройство')).map(n=>({node:n,id:lookup(n,'Исполнительное_устройство'),name:lookup(n,'Описание'),partitions:collectRefs(n,'Раздел'),structure:'unknown',links:null,control:null}));return{node,address,description:deviceDescription(node),typeId,typeName:lookup(types.get(typeId)||{},'Название')||'Тип '+typeId,version:lookup(node,'Версия'),loops,relays,outputs,executors,children}});
+// The same output/relay number on ONE device represents element and control
+// facets of the same channel. An executive unit can be the control target too.
+// SHS records are deliberately excluded here: standard devices have independent
+// loop/relay numbering, and only KDL-derived elements share address space.
 for(const device of devices){
-  const byId=(items,id)=>items.find(item=>String(item.id)===String(id))||null;
-  for(const executor of device.executors){
-    const base=Number(executor.id);
-    if(!/^\d+$/.test(String(executor.id))||!Number.isSafeInteger(base)||base<1)continue;
-    const relay=byId(device.relays,base);
-    const workingOutput=byId(device.outputs,base+1);
-    const initialOutput=byId(device.outputs,base+2);
-    const workingLimit=byId(device.loops,base+3);
-    const initialLimit=byId(device.loops,base+4);
-    if(relay&&workingOutput&&initialOutput&&workingLimit&&initialLimit){
-      executor.structure='sp4-five-address';
-      executor.links={relay,workingOutput,initialOutput,workingLimit,initialLimit};
+  const elementsById=new Map();
+  const append=(kind,record)=>{
+    const key=String(record.id);
+    if(!elementsById.has(key))elementsById.set(key,[]);
+    elementsById.get(key).push({kind,record});
+  };
+  for(const output of device.outputs)append('output',output);
+  for(const executor of device.executors)append('executor',executor);
+  const relayCounts=new Map();
+  for(const relay of device.relays){
+    const key=String(relay.id);
+    relayCounts.set(key,(relayCounts.get(key)||0)+1);
+  }
+  for(const relay of device.relays){
+    const key=String(relay.id);
+    const candidates=elementsById.get(key)||[];
+    relay.target=null;
+    relay.targetStatus=relayCounts.get(key)>1||candidates.length>1?'ambiguous':candidates.length===0?'unpaired':'paired';
+    if(relay.targetStatus==='paired'){
+      relay.target=candidates[0];
+      candidates[0].record.control=relay;
     }
   }
 }
-const partitions=(section('Разделы')?.nodes||[]).filter(n=>has(n,'Раздел')).map(n=>({node:n,id:lookup(n,'Раздел'),name:lookup(n,'Описание')||'Без названия',loops:[],relays:[]}));for(const d of devices){for(const loop of d.loops)for(const id of loop.partitions){const p=partitions.find(p=>p.id===id);if(p)p.loops.push({...loop,device:d});}for(const relay of d.relays)for(const id of relay.partitions){const p=partitions.find(p=>p.id===id);if(p)p.relays.push({...relay,device:d});}}
+// Recognize SP4-style N + 1..4 only from five actual ELEMENT rows of the
+// same device: an executive unit, two outputs and two limit-switch inputs.
+// Control relay N is an optional, independently stored management facet.
+for(const device of devices){
+  const uniqueAt=(records,id)=>{
+    const list=records.filter(x=>String(x.id)===String(id));
+    return list.length===1?list[0]:null;
+  };
+  for(const executor of device.executors){
+    const base=Number(executor.id);
+    if(!/^\d+$/.test(String(executor.id))||!Number.isSafeInteger(base)||base<1)continue;
+    const workingOutput=uniqueAt(device.outputs,base+1);
+    const initialOutput=uniqueAt(device.outputs,base+2);
+    const workingLimit=uniqueAt(device.loops,base+3);
+    const initialLimit=uniqueAt(device.loops,base+4);
+    if(workingOutput&&initialOutput&&workingLimit&&initialLimit){
+      executor.structure='sp4-five-address';
+      executor.links={
+        relay:executor.control||null,
+        workingOutput,initialOutput,workingLimit,initialLimit
+      };
+    }
+  }
+}
+const partitions=(section('Разделы')?.nodes||[]).filter(n=>has(n,'Раздел')).map(n=>({
+  node:n,id:lookup(n,'Раздел'),name:lookup(n,'Описание')||'Без названия',
+  loops:[],outputs:[],executors:[],relays:[]
+}));
+const sectionById=new Map(partitions.map(p=>[String(p.id),p]));
+for(const device of devices){
+  for(const [key,kind] of [['loops','loops'],['outputs','outputs'],['executors','executors']]){
+    for(const record of device[key]){
+      // Element membership is encoded in its own record. No relay
+      // affiliations are inherited or converted into element membership.
+      for(const id of record.partitions){
+        const p=sectionById.get(String(id));
+        if(p)p[kind].push({...record,device});
+      }
+    }
+  }
+  for(const relay of device.relays){
+    for(const id of relay.partitions){
+      const p=sectionById.get(String(id));
+      if(p)p.relays.push({...relay,device});
+    }
+  }
+}
 
 const groupSection=section('Группы разделов');
 const partitionGroups=(groupSection?.nodes||[]).map(node=>{
