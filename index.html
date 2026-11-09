@@ -393,14 +393,15 @@ function executorCards(items, device){
     const program=relay?.program?`Программа ${relay.program}`:'Программа не указана';
     const controlled=relay?.partitions?.length||0;
     const relayDescription=relay?`${program} · Тип: ${relayType} · ${controlled} разд.`:'';
+    const ownSection=unit.partitions.length?'Раздел элемента: '+unit.partitions.join(', '):'ИУ не включено в раздел';
     const body=complete?`<div class="pprog-executor-parts">
-      ${entry('Управление · запись «Реле»',parts.relay,'relays',relayDescription)}
+      ${relay?entry('Управление · запись «Реле»',parts.relay,'relays',relayDescription):'<div class="pprog-executor-incomplete">Для этого ИУ нет записи централизованного управления «Реле».</div>'}
       ${entry('Рабочий выход',parts.workingOutput,'outputs','Тип: '+outputTypeLabel(parts.workingOutput))}
       ${entry('Исходный выход',parts.initialOutput,'outputs','Тип: '+outputTypeLabel(parts.initialOutput))}
       ${entry('Рабочий концевик',parts.workingLimit,'loops',parts.workingLimit.partitions.length?'Разделы: '+parts.workingLimit.partitions.join(', '):'Раздел не указан')}
       ${entry('Исходный концевик',parts.initialLimit,'loops',parts.initialLimit.partitions.length?'Разделы: '+parts.initialLimit.partitions.join(', '):'Раздел не указан')}
      </div>`:`<div class="pprog-executor-incomplete">В TXT есть исполнительное устройство, но полный пятиадресный состав СП4 не подтверждён. Неизвестные связи не достраиваются автоматически.</div>`;
-    return `<details class="pprog-executor-card"><summary><span class="pprog-executor-head"><strong>Исполнительное устройство ${esc(unit.id)}${unit.name?' · '+esc(unit.name):''}</strong><small>${complete?'5 связанных записей · по структуре TXT':'Состав не определён · исходная запись сохранена'}</small></span><span class="pprog-executor-chevron">⌄</span></summary><div class="pprog-executor-body"><div class="pprog-executor-note">${complete?'Полная пятиадресная структура СП4 по данным TXT. Это распознавание схемы, а не подтверждение физической модели.':'Исполнительное устройство показано отдельно от реле и выходов.'}</div>${body}</div></details>`;
+    return `<details class="pprog-executor-card"><summary><span class="pprog-executor-head"><strong>Исполнительное устройство ${esc(unit.id)}${unit.name?' · '+esc(unit.name):''}</strong><small>${complete?'СП4 · пять адресов элементов':'Состав не определён · исходная запись сохранена'}</small></span><span class="pprog-executor-chevron">⌄</span></summary><div class="pprog-executor-body"><div class="pprog-executor-note"><strong>${esc(ownSection)}</strong> · ${complete?'Пять адресов элементов по структуре СП4; запись «Реле» управляет самим ИУ, если она есть.':'Исходная запись ИУ показана отдельно, дополнительные связи не определены.'}</div>${body}</div></details>`;
  }).join('')}</div>`;
 }
 
