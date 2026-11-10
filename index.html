@@ -454,6 +454,72 @@ a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
 }
 @media(prefers-reduced-motion:reduce){.pprog-device-list .pprog-device-item{transition:none}}
 
+
+/* Relay directory uses the same address-first design as Devices.
+   Up to six numbered chips plus one +N chip; no nested controls. */
+.pprog-relay-list .pprog-relay-device-content{gap:3px}
+.pprog-relay-list .pprog-relay-type-row{
+ display:flex;
+ align-items:baseline;
+ justify-content:space-between;
+ gap:6px;
+ min-width:0;
+}
+.pprog-relay-list .pprog-relay-type-row .pprog-device-type{
+ min-width:0;
+ overflow-wrap:anywhere;
+}
+.pprog-relay-list .pprog-relay-device-count{
+ flex:none;
+ font-size:12px;
+ line-height:1.35;
+ color:#dce9fa;
+ font-weight:650;
+ white-space:nowrap;
+ font-variant-numeric:tabular-nums;
+}
+.pprog-relay-list .pprog-relay-chips{
+ display:flex;
+ flex-wrap:wrap;
+ align-items:center;
+ gap:4px;
+ min-width:0;
+ margin-top:5px;
+}
+.pprog-relay-list .pprog-relay-chip{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ flex:0 0 auto;
+ box-sizing:border-box;
+ min-width:26px;
+ height:24px;
+ padding:2px 6px;
+ border:1px solid #405675;
+ border-radius:5px;
+ color:#d6e5f8;
+ background:#1d2e45;
+ font-size:11px;
+ font-weight:650;
+ line-height:1;
+ white-space:nowrap;
+ font-variant-numeric:tabular-nums;
+}
+.pprog-relay-list .pprog-relay-chip-more{
+ color:#eef5ff;
+ background:#29415f;
+ border-color:#54718f;
+}
+@media(max-width:530px){
+ .pprog-relay-list .pprog-relay-device-count{font-size:11.5px}
+ .pprog-relay-list .pprog-relay-chips{gap:3px;margin-top:4px}
+ .pprog-relay-list .pprog-relay-chip{min-width:24px;height:22px;padding:2px 4px;font-size:10.5px}
+}
+@media(max-width:360px){
+ .pprog-relay-list .pprog-relay-device-count{font-size:11px}
+ .pprog-relay-list .pprog-relay-chip{min-width:23px;padding:2px 3px}
+}
+
 </style>
 </head>
 <body>
@@ -822,10 +888,24 @@ function partitionDetail(){
  `<div class="panel pad"><div class="panel-header"><h3 class="panel-title">Шлейфы раздела (${p.loops.length})</h3></div>${partitionLoops(p.loops)}</div>`+
  outputs+executors;
 }
+function relayPreviewChips(relays){
+ // TXT relay records only. Never infer relay chips from output records.
+ const numbers=relays.map(r=>String(r.id??'').trim()).sort((a,b)=>a.localeCompare(b,'ru',{numeric:true}));
+ const first=numbers.slice(0,6),remaining=numbers.length-first.length;
+ return `<span class="pprog-relay-chips">${first.map(n=>`<span class="pprog-relay-chip">${esc(n||'—')}</span>`).join('')}${remaining>0?`<span class="pprog-relay-chip pprog-relay-chip-more" aria-label="Ещё ${remaining} реле">+${remaining}</span>`:''}</span>`;
+}
 function relaysPage(){
  const ds=model.devices.filter(d=>d.relays.length>0);
- return head('Реле',`Записи управления «Реле» из PProg · ${model.relays.length} реле`,button('Экспорт CSV реле','csv-relays','ghost','download'))+
- `<div class="panel pad"><div class="relay-device-list">${ds.map(d=>`<button class="relay-device-choice" data-relay-device="${model.devices.indexOf(d)}"><span class="relay-device-icon">${icon('cpu')}</span><span class="relay-device-info"><strong>Адрес ${esc(d.address)} · ${esc(d.typeName)}</strong>${d.description?`<span>${esc(d.description)}</span>`:''}<small>${d.relays.length} реле</small></span><span class="relay-device-arrow">›</span></button>`).join('')||empty('В TXT нет записей «Реле»')}</div></div>`;
+ return head('Реле',`Приборы с реле · ${model.relays.length} реле`,button('Экспорт CSV реле','csv-relays','ghost','download'))+
+ `<div class="panel pad device-directory pprog-device-list pprog-relay-list">${ds.map(d=>`<button type="button" class="list-row device-directory-row pprog-device-item pprog-relay-device-item" data-relay-device="${model.devices.indexOf(d)}" aria-label="Открыть реле прибора адрес ${esc(d.address)}: ${esc(d.description||d.typeName)}">
+  <span class="pprog-device-address"><span class="pprog-device-address-label">АДРЕС</span><strong class="pprog-device-address-number">${esc(deviceAddressDisplay(d.address))}</strong></span>
+  <span class="directory-info pprog-device-content pprog-relay-device-content">
+   <strong class="pprog-device-name${d.description?'':' is-unnamed'}">${esc(d.description||'Без названия')}</strong>
+   <span class="pprog-relay-type-row"><span class="pprog-device-type">${esc(d.typeName)}</span><span class="pprog-relay-device-count">${d.relays.length} реле</span></span>
+   ${relayPreviewChips(d.relays)}
+  </span>
+  <span class="directory-chevron pprog-device-chevron" aria-hidden="true">›</span>
+ </button>`).join('')||empty('В TXT нет записей «Реле»')}</div>`;
 }
 function relayDevicePage(){
  const d=model.devices[relayDeviceIndex];if(!d)return relaysPage();
@@ -1010,7 +1090,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.10.24';
+  const LOCAL_BUILD='2026.11.10.25';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
