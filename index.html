@@ -318,6 +318,142 @@ a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
 .tab[aria-pressed="true"]{color:#f0f6ff}
 @media(pointer:coarse){.tag.click,.partition-group-part,.section-card button[data-partition],.tab{min-height:44px}}
 @media(max-width:530px){.relay-device-info span,.directory-info .device-desc{font-size:13px!important;line-height:1.52}.partition-group-part{padding:9px 10px}}
+
+/* Device directory: address / name / type / counts / chevron.
+   Match the user-approved layout; keep the established dark-blue PProg palette. */
+.device-directory.pprog-device-list{
+ display:grid;
+ gap:9px;
+ padding:0!important;
+ background:transparent;
+ border:0;
+ box-shadow:none;
+}
+.pprog-device-list .pprog-device-item{
+ display:grid;
+ grid-template-columns:66px minmax(0,1fr) 14px;
+ align-items:center;
+ gap:12px;
+ min-width:0;
+ width:100%;
+ min-height:88px;
+ margin:0;
+ padding:9px 13px 9px 9px;
+ border:1px solid #34465d;
+ border-radius:12px;
+ background:var(--panel,#141e2d);
+ color:var(--text,#edf3ff);
+ text-align:left;
+ box-shadow:0 2px 9px #00000016;
+ cursor:pointer;
+ transition:background-color .14s ease,border-color .14s ease;
+}
+.pprog-device-list .pprog-device-item:last-child{border-bottom:1px solid #34465d}
+.pprog-device-list .pprog-device-item:hover{background:#19273a;border-color:#587493}
+.pprog-device-list .pprog-device-item:active{background:#233752}
+.pprog-device-list .pprog-device-item:focus-visible{outline:2px solid #8fbaff;outline-offset:2px}
+.pprog-device-list .pprog-device-address{
+ width:66px;
+ min-height:66px;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:4px;
+ background:#1c2b40;
+ border:1px solid #354a65;
+ border-radius:8px;
+ flex:none;
+}
+.pprog-device-list .pprog-device-address-label{
+ font-size:9px;
+ font-weight:700;
+ letter-spacing:.12em;
+ line-height:1.3;
+ color:#a8bdd7;
+}
+.pprog-device-list .pprog-device-address-number{
+ font-size:23px;
+ font-weight:800;
+ line-height:1.05;
+ font-variant-numeric:tabular-nums;
+ letter-spacing:-.03em;
+ color:#f0f6ff;
+}
+.pprog-device-list .pprog-device-content{
+ display:flex;
+ flex-direction:column;
+ gap:3px;
+ min-width:0;
+ overflow:visible;
+}
+.pprog-device-list .pprog-device-name{
+ display:-webkit-box;
+ -webkit-box-orient:vertical;
+ -webkit-line-clamp:2;
+ overflow:hidden;
+ max-width:100%;
+ min-width:0;
+ color:#eff5ff;
+ font-size:15px;
+ font-weight:760;
+ line-height:1.3;
+ overflow-wrap:anywhere;
+}
+.pprog-device-list .pprog-device-name.is-unnamed{color:#a4b6ce;font-style:italic;font-weight:500}
+.pprog-device-list .pprog-device-type{
+ color:#abbfd8;
+ font-size:12px;
+ font-weight:500;
+ line-height:1.4;
+ overflow-wrap:anywhere;
+}
+.pprog-device-list .pprog-device-stats{
+ display:flex;
+ flex-wrap:wrap;
+ align-items:baseline;
+ column-gap:6px;
+ row-gap:2px;
+ margin-top:4px;
+ color:#b4c3d7;
+ font-size:12px;
+ font-weight:450;
+ line-height:1.45;
+ font-variant-numeric:tabular-nums;
+}
+.pprog-device-list .pprog-device-stats>span{display:inline;white-space:nowrap}
+.pprog-device-list .pprog-device-stats>span+span::before{content:"·";padding-right:6px;color:#758ca6}
+.pprog-device-list .pprog-device-stats b{font-weight:750;color:#eaf1ff}
+.pprog-device-list .pprog-device-chevron{
+ color:#8ba7c8;
+ font-size:23px;
+ font-weight:400;
+ justify-self:end;
+ line-height:1;
+}
+@media(max-width:530px){
+ .device-directory.pprog-device-list{gap:8px}
+ .pprog-device-list .pprog-device-item{
+  grid-template-columns:60px minmax(0,1fr) 11px;
+  gap:10px;
+  padding:8px 11px 8px 8px;
+  min-height:80px;
+ }
+ .pprog-device-list .pprog-device-address{width:60px;min-height:64px}
+ .pprog-device-list .pprog-device-address-number{font-size:22px}
+ .pprog-device-list .pprog-device-name{font-size:15px}
+ .pprog-device-list .pprog-device-type{font-size:12px}
+ .pprog-device-list .pprog-device-stats{font-size:11.5px;column-gap:5px}
+ .pprog-device-list .pprog-device-stats>span+span::before{padding-right:5px}
+}
+@media(max-width:360px){
+ .pprog-device-list .pprog-device-item{grid-template-columns:54px minmax(0,1fr) 10px;gap:9px}
+ .pprog-device-list .pprog-device-address{width:54px;min-height:60px}
+ .pprog-device-list .pprog-device-address-number{font-size:21px}
+ .pprog-device-list .pprog-device-stats{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){.pprog-device-list .pprog-device-item{transition:none}}
+
 </style>
 </head>
 <body>
@@ -462,7 +598,23 @@ function overview(){const linked=model.loops.filter(x=>x.partitions.length).leng
 // The original output records remain in the raw model and TXT export.
 function standaloneOutputs(device){return device.outputs.filter(o=>!o.control);}
 function visibleOutputRows(items){return items.filter(o=>!o.control);}
-function devicesPage(){if(!model.devices.length)return head('Приборы','Приборы, зарегистрированные в пульте')+`<div class="panel">${empty('В этом файле нет записей приборов')}</div>`;const d=model.devices[Math.max(0,Math.min(deviceIndex,model.devices.length-1))];const ownOutputs=standaloneOutputs(d);if(deviceTab==='outputs'&&!ownOutputs.length)deviceTab=d.relays.length?'relays':'loops';const tabs=[['loops',`Шлейфы (${d.loops.length})`],['relays',`Реле (${d.relays.length})`],...(ownOutputs.length?[['outputs',`Выходы (${ownOutputs.length})`]]:[]),...(d.executors.length?[['executors',`Исп. устройства (${d.executors.length})`]]:[])];let inner='';if(deviceTab==='loops')inner=loopTable(d.loops.map(l=>({...l,device:d})),true);if(deviceTab==='relays')inner=relayTable(d.relays.map(r=>({...r,device:d})),true);if(deviceTab==='outputs')inner=outputCards(ownOutputs);if(deviceTab==='executors')inner=executorCards(d.executors,d);if(false&&deviceTab==='details')inner=`<div class="info-grid">${fieldGrid(d.node.fields)}</div><h4 style="font-size:12px;margin:23px 0 9px">Остальные записи прибора</h4>${d.node.children.map(n=>nodeCard(n,1)).join('')||empty('Нет вложенных записей')}`;if(!deviceOpened)return head('Приборы',`Устройства в конфигурации · ${model.devices.length}`)+`<div class="panel pad device-directory">${model.devices.map((x,i)=>`<button class="list-row device-directory-row" data-device="${i}"><span class="icon-tile">${icon('cpu')}</span><span class="directory-info"><strong>Адрес ${esc(x.address)} · ${esc(x.typeName)}</strong>${x.description?`<span class="device-desc">${esc(x.description)}</span>`:''}<small>${x.loops.length} ${ruPlural(x.loops.length,'шлейф','шлейфа','шлейфов')} · ${x.relays.length} реле · ${standaloneOutputs(x).length} ${ruPlural(standaloneOutputs(x).length,'выход','выхода','выходов')}${x.executors.length?' · '+x.executors.length+' ИУ':''}</small></span><span class="directory-chevron">›</span></button>`).join('')}</div>`;return head('Прибор №'+esc(d.address),esc(d.typeName),button('← Все приборы','back-devices','ghost'))+`<div class="panel device-detail"><div class="detail-top"><div><div class="eyebrow">Адрес ${esc(d.address)} · Тип ${esc(d.typeId)}</div><h3>${esc(d.typeName)}</h3>${d.description?`<div class="device-desc">${esc(d.description)}</div>`:`<div class="dim" style="margin:5px 0 10px">Описание прибора в TXT не указано</div>`}<div class="taglist">${pill('ШС: '+d.loops.length,'blue')}${pill('Реле: '+d.relays.length)}${pill('Выходы: '+ownOutputs.length)}${d.executors.length?pill('ИУ: '+d.executors.length,'blue'):''}${d.version?pill('Версия: '+d.version,'green'):''}</div></div>${button('Весь TXT','raw-device','sm','code')}</div><div class="tabs" role="group" aria-label="Состав прибора">${tabs.map(([id,txt])=>`<button type="button" class="tab ${deviceTab===id?'active':''}" data-tab="${id}" aria-pressed="${deviceTab===id}">${txt}</button>`).join('')}</div>${inner}`}
+function deviceAddressDisplay(address){
+ const value=String(address??'').trim();
+ return /^\d+$/.test(value)?value.padStart(2,'0'):(value||'—');
+}
+function devicesPage(){if(!model.devices.length)return head('Приборы','Приборы, зарегистрированные в пульте')+`<div class="panel">${empty('В этом файле нет записей приборов')}</div>`;const d=model.devices[Math.max(0,Math.min(deviceIndex,model.devices.length-1))];const ownOutputs=standaloneOutputs(d);if(deviceTab==='outputs'&&!ownOutputs.length)deviceTab=d.relays.length?'relays':'loops';const tabs=[['loops',`Шлейфы (${d.loops.length})`],['relays',`Реле (${d.relays.length})`],...(ownOutputs.length?[['outputs',`Выходы (${ownOutputs.length})`]]:[]),...(d.executors.length?[['executors',`Исп. устройства (${d.executors.length})`]]:[])];let inner='';if(deviceTab==='loops')inner=loopTable(d.loops.map(l=>({...l,device:d})),true);if(deviceTab==='relays')inner=relayTable(d.relays.map(r=>({...r,device:d})),true);if(deviceTab==='outputs')inner=outputCards(ownOutputs);if(deviceTab==='executors')inner=executorCards(d.executors,d);if(false&&deviceTab==='details')inner=`<div class="info-grid">${fieldGrid(d.node.fields)}</div><h4 style="font-size:12px;margin:23px 0 9px">Остальные записи прибора</h4>${d.node.children.map(n=>nodeCard(n,1)).join('')||empty('Нет вложенных записей')}`;if(!deviceOpened)return head('Приборы',`Устройства в конфигурации · ${model.devices.length}`)+`<div class="panel pad device-directory pprog-device-list">${model.devices.map((x,i)=>`<button type="button" class="list-row device-directory-row pprog-device-item" data-device="${i}" aria-label="Открыть прибор адрес ${esc(x.address)}: ${esc(x.description||x.typeName)}">
+ <span class="pprog-device-address"><span class="pprog-device-address-label">АДРЕС</span><strong class="pprog-device-address-number">${esc(deviceAddressDisplay(x.address))}</strong></span>
+ <span class="directory-info pprog-device-content">
+  <strong class="pprog-device-name${x.description?'':' is-unnamed'}">${esc(x.description||'Без названия')}</strong>
+  <span class="pprog-device-type">${esc(x.typeName)}</span>
+  <span class="pprog-device-stats">
+   <span><b>${x.loops.length}</b> ${ruPlural(x.loops.length,'шлейф','шлейфа','шлейфов')}</span>
+   <span><b>${x.relays.length}</b> реле</span>
+   <span><b>${x.outputs.length}</b> ${ruPlural(x.outputs.length,'выход','выхода','выходов')}</span>
+  </span>
+ </span>
+ <span class="directory-chevron pprog-device-chevron" aria-hidden="true">›</span>
+</button>`).join('')}</div>`;return head('Прибор №'+esc(d.address),esc(d.typeName),button('← Все приборы','back-devices','ghost'))+`<div class="panel device-detail"><div class="detail-top"><div><div class="eyebrow">Адрес ${esc(d.address)} · Тип ${esc(d.typeId)}</div><h3>${esc(d.typeName)}</h3>${d.description?`<div class="device-desc">${esc(d.description)}</div>`:`<div class="dim" style="margin:5px 0 10px">Описание прибора в TXT не указано</div>`}<div class="taglist">${pill('ШС: '+d.loops.length,'blue')}${pill('Реле: '+d.relays.length)}${pill('Выходы: '+ownOutputs.length)}${d.executors.length?pill('ИУ: '+d.executors.length,'blue'):''}${d.version?pill('Версия: '+d.version,'green'):''}</div></div>${button('Весь TXT','raw-device','sm','code')}</div><div class="tabs" role="group" aria-label="Состав прибора">${tabs.map(([id,txt])=>`<button type="button" class="tab ${deviceTab===id?'active':''}" data-tab="${id}" aria-pressed="${deviceTab===id}">${txt}</button>`).join('')}</div>${inner}`}
 function loopTable(items,compact=false){return items.length?`<div class="table-wrap"><table class="data-table zone-table"><thead><tr>${!compact?'<th>Прибор</th>':''}<th>Шлейф</th><th>Описание</th><th>Раздел</th></tr></thead><tbody>${items.map(l=>`<tr class="${l.type==='0'&&!l.partitions.length?'inactive':''}">${!compact?`<td><button class="td-button" data-device="${model.devices.indexOf(l.device)}">${esc(l.device.typeName)} · ${esc(l.device.address)}</button></td>`:''}<td class="mono">${esc(l.id)}</td><td><div>${esc(l.name||'—')}</div><div class="small muted" style="margin-top:4px">Тип: ${esc(loopTypeLabel(l.type))}</div></td><td>${l.partitions.length?l.partitions.map(id=>{const p=model.partitions.find(x=>x.id===id);return p?`<button class="td-button" data-partition="${model.partitions.indexOf(p)}">${esc(id)} · ${esc(p.name)}</button>`:pill('Раздел '+id+' не найден','amber')}).join(', '):'<span class="dim">Не указан</span>'}</td></tr>`).join('')}</tbody></table></div>`:empty('Шлейфы отсутствуют','list')}
 // Функциональные типы ниже относятся к записи «Выход». Запись «Реле» независима.
 // Расшифровки кодов проверялись на тестовом экспорте 123333.TXT.
@@ -858,7 +1010,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.10.23';
+  const LOCAL_BUILD='2026.11.10.24';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
