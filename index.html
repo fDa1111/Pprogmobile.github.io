@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="color-scheme" content="dark">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="color-scheme" content="dark">
 <title>PProg Viewer — Конфигурация Болид</title>
 <meta name="theme-color" content="#090e18">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -209,17 +209,102 @@
 #pprogUpdateNotice .pprogUpdateButton{background:#78adff;color:#091528;font-weight:800;border:0;padding:10px 14px;border-radius:9px;min-height:40px;touch-action:manipulation}
 @media (min-width:800px){#pprogUpdateNotice{bottom:20px}}
 
-/* v20 – conservative polish of the established v18 layout (no boxed parameter grid). */
-.relay-params{gap:7px;font-size:13px;line-height:1.6}
-.relay-summary{gap:7px}
-.section-card .section-meta{font-size:13px;line-height:1.6}
-.device-directory-row .directory-info small{font-size:13px;line-height:1.55}
-.relay-device-info small{font-size:13px;line-height:1.5}
+/* Impeccable: restrained refinement of the v18/v20 compact visual system.
+   These are deliberately lightweight surfaces, NOT boxed parameter grids. */
+:root{
+ --muted:#a7b9d0;
+ --dim:#869bb5;
+ --line:#2f4056;
+ --radius:16px;
+}
+html{scroll-padding-top:76px}
+body{text-rendering:optimizeLegibility}
+::selection{background:#365d98;color:#fff}
+a{text-underline-offset:3px}
+button,input,select,textarea{font:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,
+a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
+.pprog-executor-card>summary:focus-visible{
+ outline:2px solid #8fbaff;
+ outline-offset:3px;
+}
+.searchbox:focus-within{border-color:#80adff;box-shadow:0 0 0 2px #3b6daf38}
+.searchbox input::placeholder{color:#a2b3ca}
+.content{max-width:1380px;padding-top:26px}
+.page-head{align-items:center;margin-bottom:19px;gap:12px}
+.page-title{margin:0 0 4px;font-size:clamp(24px,2.2vw,32px);font-weight:760;letter-spacing:-.027em;line-height:1.24;overflow-wrap:anywhere}
+.page-sub{color:#a8b9ce;font-size:13px;line-height:1.55;overflow-wrap:anywhere}
+.page-head .right>.btn{min-height:40px}
+.panel{border-color:#2d3d52;box-shadow:0 4px 18px #00000014}
+.pad{padding:20px}
+.panel-header{padding-bottom:13px;margin-bottom:13px}
+.section-card{padding:18px;gap:11px}
+.section-card .section-name{min-height:0;line-height:1.35;overflow-wrap:anywhere}
+.section-card .section-id{font-size:11px;letter-spacing:.10em}
+.section-card .section-meta{font-size:13px;line-height:1.55;color:#a7b9d1}
+.section-card .taglist{gap:6px}
+.section-card button[data-partition]{min-height:39px}
+.device-directory-row{padding:13px 9px;gap:12px}
+.directory-info{gap:6px}
+.directory-info strong{font-size:15px;line-height:1.38}
+.device-directory-row .directory-info small{font-size:13px;line-height:1.5;color:#adbfda}
+.directory-info .device-desc{padding:6px 10px!important;line-height:1.4;font-size:12px}
+.relay-device-choice{padding:13px 12px}
+.relay-device-info strong{color:#edf4ff;line-height:1.4}
+.relay-device-info span{color:#c2d3e8}
+.relay-device-info small{font-size:13px;line-height:1.5;color:#afc4dc}
+.relay-card{background:#111e30;border-color:#35495e}
+.relay-card summary{padding:14px 13px;min-height:60px}
+.relay-summary{gap:6px}
+.relay-summary strong,.relay-title{font-size:16px!important;line-height:1.35;letter-spacing:-.015em}
+.relay-params{gap:6px;margin-top:7px;font-size:13px;line-height:1.58;color:#c4d2e5;font-variant-numeric:tabular-nums}
+.relay-params b{color:#a9c9f2;font-weight:700}
+.relay-count{color:#c5dcff;background:#223a57;font-size:11px}
+.relay-body-heading{color:#d1e0f3}
+.relay-partition{min-height:44px}
+.pprog-output-card{background:#122137;border-color:#35495e}
+.pprog-output-header>span{font-size:12px;line-height:1.45;color:#c7defa}
+.pprog-output-description{font-size:13px;line-height:1.58;color:#cbdaed}
+.pprog-executor-card{border-color:#35495e}
+.pprog-executor-part{min-height:44px}
+.tab{font-size:13px;min-height:43px;padding:11px 13px;color:#a8bbd4}
+.tab.active{color:#eef6ff;border-color:#75a8ff}
+.tag{font-size:12px;line-height:1.4}
+.btn{min-height:40px;font-size:13px}
+.btn.sm{min-height:36px;font-size:12px}
+.data-table th{font-size:11px;color:#a9bad0}
+.data-table td{font-size:13px;line-height:1.55}
+.table-wrap{-webkit-overflow-scrolling:touch}
+@media(max-width:850px){
+ .content{padding-top:20px}
+}
 @media(max-width:530px){
- .relay-card summary{padding:14px 12px}
- .relay-params{font-size:13px;line-height:1.6}
+ .content{padding:18px 12px calc(95px + env(safe-area-inset-bottom))}
+ .page-head{gap:10px;margin-bottom:17px;align-items:flex-start}
+ .page-title{font-size:24px;line-height:1.27}
+ .page-head .right{width:100%;justify-content:flex-start}
+ .page-head .right .btn{flex:0 1 auto;max-width:100%;min-height:40px}
+ .topbar .searchbox input{font-size:16px;min-width:0}
+ .topbar .searchbox input::placeholder{color:#9cacbf}
+ .device-directory-row{padding:13px 7px}
  .device-directory-row .directory-info{gap:6px}
- .section-card{gap:12px}
+ .device-directory-row .directory-info small{font-size:12.5px}
+ .relay-card summary{padding:13px 11px}
+ .relay-params{font-size:13px;gap:6px;line-height:1.6}
+ .relay-count{padding:5px 7px}
+ .section-card{padding:15px;gap:11px}
+ .mobile-bottom-nav button{min-height:54px;font-size:11px;gap:4px}
+ .mobile-bottom-nav button .ico{width:20px;height:20px}
+}
+@media(max-width:360px){
+ .page-title{font-size:22px}
+ .relay-card summary{gap:7px}
+ .relay-count{font-size:10px}
+ .page-head .right .btn{padding:8px 12px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ .relay-chevron,.pprog-executor-chevron,.sidebar,.btn{transition:none}
 }
 </style>
 </head>
@@ -353,7 +438,7 @@ let model=null,currentFile='',fileEncoding='',page='overview',relayDeviceIndex=0
 const navMain=[['overview','layout','Обзор'],['devices','cpu','Приборы'],['loops','list','Шлейфы и зоны'],['partitions','layers','Разделы'],['relays','zap','Реле'],['links','link','Связи системы']];const navExtra=[['levels','users','Уровни доступа'],['passwords','lock','Пароли'],['events','radio','Передача событий'],['bindings','link','Привязка управления'],['advanced','grid','Другие вкладки PProg'],['raw','code','Все данные TXT']];
 function navig(to,options={}){page=to;if(to==='partitions')partitionsView='partitions';if(options.device!==undefined){deviceIndex=options.device;deviceOpened=true;}else if(to==='devices')deviceOpened=false;if(options.partition!==undefined)partitionIndex=options.partition;if(options.tab)deviceTab=options.tab;if(options.section!==undefined)rawIndex=options.section;listSearch='';viewFilter='all';shownPasswords.clear();searchTerm='';document.getElementById('globalSearch').value='';render();window.scrollTo({top:0,behavior:'instant'});if(menuOpen){menuOpen=false;document.getElementById('sidebar').classList.remove('open')}}
 function renderNavigation(){const labels={overview:model?'Обзор конфигурации':'Начало',devices:'Приборы',loops:'Шлейфы и зоны',partitions:'Разделы',relays:'Реле',relayDevice:'Реле прибора',links:'Связи системы',levels:'Уровни доступа',passwords:'Пароли',events:'Передача событий',bindings:'Привязка управления',advanced:'Другие вкладки PProg',raw:'Данные TXT',search:'Результаты поиска'};const counts={devices:model?.devices.length,loops:model?.loops.length,partitions:model?.partitions.length,relays:model?.relays.length,levels:model?.levels.length,passwords:model?.passwords.length};const make=items=>items.map(([id,ico,name])=>`<button class="navbtn ${(page===id||(id==='relays'&&page==='relayDevice'))?'active':''}" data-nav="${id}" ${!model?'disabled style="opacity:.4"':''}>${icon(ico)}<span>${name}</span>${model&&counts[id]!==undefined?`<b>${counts[id]}</b>`:''}</button>`).join('');document.getElementById('navMain').innerHTML=make(navMain);document.getElementById('navExtra').innerHTML=make(navExtra)+`<button type="button" class="navbtn" id="pprogCheckUpdateMenu" data-pprog-check-update><span style="width:20px;text-align:center;font-size:20px;line-height:1">↻</span><span>Проверить обновления</span></button>`;document.getElementById('crumb').innerHTML=`${icon('database')}<strong>${esc(labels[page]||'PProg Viewer')}</strong>${model?`<span style="color:#59758e">/</span><span>Пульт ${esc(model.version||'—')}</span>`:''}`;document.getElementById('fileNamePill').classList.toggle('hide',!model);document.getElementById('fileNamePill').textContent=currentFile;document.getElementById('searchWrap').classList.toggle('hide',!model)}
-function head(title,subtitle,actions=''){return `<div class="page-head"><div><div class="eyebrow">PPROG / КОНФИГУРАЦИЯ</div><h2 class="page-title">${title}</h2><p class="page-sub">${subtitle}</p></div>${actions?`<div class="right">${actions}</div>`:''}</div>`}
+function head(title,subtitle,actions=''){return `<div class="page-head"><div><h2 class="page-title">${title}</h2><p class="page-sub">${subtitle}</p></div>${actions?`<div class="right">${actions}</div>`:''}</div>`}
 function button(label,act,kind='ghost',ico=''){return `<button class="btn ${kind}" data-action="${act}">${ico?icon(ico):''}${label}</button>`}
 function pill(text,kind='neutral'){return `<span class="pill ${kind}">${esc(text)}</span>`}
 function nfmt(s){return Number(s||0).toLocaleString('ru-RU')}
@@ -758,7 +843,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.10.21';
+  const LOCAL_BUILD='2026.11.10.22';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
