@@ -1,0 +1,49 @@
+name: Build Android APK
+on:
+  push:
+    branches: [main]
+    paths:
+      - "android/**"
+      - ".github/workflows/android-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  android:
+    name: Build debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+      - name: Install Android SDK 35
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+      - name: Build APK
+        working-directory: android
+        run: gradle --no-daemon --stacktrace :app:assembleDebug
+      - name: Publish workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PProgViewer-Android-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish public preview APK
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "android-preview-${GITHUB_RUN_NUMBER}" \
+            "android/app/build/outputs/apk/debug/app-debug.apk#PProgViewer-Android-debug.apk" \
+            --title "PProg Viewer Android - preview ${GITHUB_RUN_NUMBER}" \
+            --prerelease \
+            --notes "Тестовый APK с WebView. Веб-интерфейс обновляется через GitHub Pages без переустановки. APK подписан временным debug-ключом CI: для обновления самой Android-оболочки может потребоваться переустановка; для постоянных обновлений APK нужен приватный стабильный ключ подписи."

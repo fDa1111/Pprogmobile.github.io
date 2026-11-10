@@ -644,7 +644,36 @@ function searchPage(){
 function render(){renderNavigation();const components={overview,devices:devicesPage,loops:loopsPage,partitions:partitionsPage,partitionDetail,relays:relaysPage,relayDevice:relayDevicePage,links:linksPage,levels:levelsPage,passwords:passwordsPage,events:eventsPage,bindings:bindingsPage,advanced:advancedPage,raw:rawPage,search:searchPage};document.getElementById('content').innerHTML=model?(components[page]||overview)():welcome();const header=document.querySelector('.topbar')||document.querySelector('header');if(header){document.documentElement.style.setProperty('--sticky-zone-top',Math.max(0,Math.round(header.getBoundingClientRect().bottom))+'px');}}
 function toast(text){const host=document.getElementById('toastHost');host.innerHTML=`<div class="toast">${esc(text)}</div>`;clearTimeout(toast.t);toast.t=setTimeout(()=>host.innerHTML='',4400)}
 async function importFile(file){if(!file)return;if(file.size>25*1024*1024){toast('Файл превышает 25 МБ');return}if(/\.gpc$/i.test(file.name)){toast('GPC — зашифрованный формат. Нужен текстовый экспорт PProg (.TXT).');return}try{const {text,encoding}=textRead(await file.arrayBuffer());const parsed=parseConfig(text);const built=buildModel(parsed);model=built;currentFile=safeName(file.name);fileEncoding=encoding;deviceIndex=0;partitionIndex=0;rawIndex=0;advancedIndex=-1;shownPasswords.clear();navig('overview');toast(`Загружено: ${model.devices.length} приборов, ${model.partitions.length} разделов, ${model.loops.length} шлейфов`)}catch(e){toast('Не удалось разобрать файл: '+(e?.message||'неизвестная ошибка'))}}
-function saveBlob(content,name,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),500)}
+async function saveBlob(content,name,type){
+  const blob=new Blob([content],{type});
+  // Only Android WebView has this native bridge. iPhone, desktop and PWA keep
+  // the original browser download workflow unchanged.
+  const bridge=window.PProgAndroid;
+  if(bridge&&typeof bridge.beginExport==='function'){
+    let ticket='';
+    try{
+      ticket=bridge.beginExport(String(name),String(type||'application/octet-stream'));
+      if(!ticket)throw new Error('Не удалось начать экспорт');
+      const bytes=new Uint8Array(await blob.arrayBuffer());
+      const chunkSize=48*1024;
+      for(let offset=0;offset<bytes.length;offset+=chunkSize){
+        const part=bytes.subarray(offset,Math.min(offset+chunkSize,bytes.length));
+        let binary='';
+        for(let k=0;k<part.length;k++)binary+=String.fromCharCode(part[k]);
+        if(!bridge.appendChunk(ticket,btoa(binary)))throw new Error('Ошибка передачи файла');
+        if((Math.floor(offset/chunkSize)%8)===7)await new Promise(resolve=>setTimeout(resolve,0));
+      }
+      if(!bridge.finishExport(ticket))throw new Error('Не удалось завершить экспорт');
+    }catch(error){
+      try{if(ticket)bridge.cancelExport(ticket)}catch(_){}
+      toast('Ошибка сохранения: '+(error?.message||'неизвестная ошибка'));
+    }
+    return;
+  }
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),500);
+}
 function csvCell(v){const s=String(v??'');return '"'+s.replace(/"/g,'""')+'"'}
 function exportCSV(kind){const rows=kind==='loops'?[['Адрес прибора','Прибор','Шлейф','Описание','Код типа ШС','Тип ШС (PProg)','Разделы'],...model.loops.map(l=>[l.device.address,l.device.typeName,l.id,l.name,l.type,loopTypeLabel(l.type),l.partitions.join('; ')])]:kind==='outputs'?[['Адрес прибора','Прибор','Выход','Описание','Код типа выхода','Расшифровка типа','Раздел элемента'],...visibleOutputRows(model.outputs).map(o=>[o.device.address,o.device.typeName,o.id,o.name,o.type||'0',outputTypeLabel(o),o.partitions.join('; ')])]:[['Адрес прибора','Прибор','Реле','Описание','Код программы','Название программы (PProg)','Задержка (с)','Время управления (с)','Разделы'],...model.relays.map(r=>[r.device.address,r.device.typeName,r.id,r.name,r.program||'0',relayProgramLabel(r.program),r.delay||'0.0',r.duration||'30.0',r.partitions.join('; ')])];saveBlob('\ufeff'+rows.map(row=>row.map(csvCell).join(';')).join('\r\n'),`PProg_${kind==='loops'?'shleify':kind==='outputs'?'vyhody':'rele'}.csv`,'text/csv;charset=utf-8')}
 function exportJSON(){const scrub=node=>({line:node.line,prefix:node.prefix,fields:node.fields.map(f=>({key:f.key,value:isSecret(f.key)?'••••••':f.value})),children:node.children.map(scrub)});const payload={generator:'PProg Viewer',filename:currentFile,encoding:fileEncoding,pultVersion:model.version,sections:model.sections.map(s=>({name:s.name,line:s.line,records:s.nodes.map(scrub)}))};saveBlob(JSON.stringify(payload,null,2),`PProg_config_view.json`,'application/json;charset=utf-8');toast('JSON сохранён, значения паролей скрыты')}
@@ -729,7 +758,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.10.20';
+  const LOCAL_BUILD='2026.11.10.21';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
