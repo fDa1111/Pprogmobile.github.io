@@ -482,7 +482,7 @@ function relayProgramDisplay(value){
 }
 function controlTimeDisplay(value,defaultValue){
  const text=String(value??'').trim()||defaultValue;
- return text+' с'+(text==='8191.875'?' · без ограничения (С2000М)':'');
+ return text+' с'+(text==='8191.875'?' · без ограничения':'');
 }
 
 /* Each explicit executive-unit record is displayed even if its internal
@@ -530,19 +530,9 @@ function pprogOutputContext(o){
 }
 function outputCards(items){
  const display=visibleOutputRows(items);
- if(!display.length)return empty('Самостоятельных выходов нет: каналы с записью «Реле» показаны на вкладке «Реле»','zap');
+ if(!display.length)return empty('Самостоятельных выходов нет','zap');
  return `<div class="pprog-output-cards">${display.map(o=>{
-   const relation=pprogOutputContext(o),relay=relation.relay,unit=relation.unit;
-   const status=unit
-     ?`${relation.role} выход ИУ ${esc(unit.id)} (структура СП4)`
-     :relay
-       ?`Есть отдельная запись «Реле ${esc(relay.id)}» — отображается на вкладке «Реле»`
-       :'Записи «Реле» для этого выхода в TXT нет';
-   const program=relay?` · программа ${esc(relayProgramDisplay(relay.program))}`:'';
-   const sp2=relation.likelySp2?'<span><b>СП2:</b> указано в описании TXT; модель физического устройства экспортом не подтверждена</span>':'';
-   const typeNote=!relay&&String(o.type||'0')==='0'
-     ?'<span class="pprog-type-disclaimer">«Реле (по умолчанию)» — название типа выхода, а не доказательство наличия записи «Реле».</span>':'';
-   return `<div class="pprog-output-card"><div class="pprog-output-header"><strong>Выход ${esc(o.id)}</strong><span>Тип выхода: ${esc(outputTypeLabel(o))}</span></div><div class="pprog-output-description">${esc(o.name||'Без описания')}</div><div class="pprog-facet-info"><span><b>Запись PProg:</b> Выход ${esc(o.id)}</span><span><b>Связь:</b> ${status}${program}</span>${sp2}${typeNote}<span><b>Раздел элемента:</b> ${o.partitions.length?o.partitions.map(id=>esc(id)).join(', '):'Не включён в раздел'}</span></div>${o.partitions.length?`<div class="taglist">${o.partitions.map(id=>{const p=model.partitions.find(x=>String(x.id)===String(id));return p?`<button type="button" class="tag click" data-partition="${model.partitions.indexOf(p)}">Р ${esc(id)} · ${esc(p.name)}</button>`:''}).join('')}</div>`:''}${renderInlineExtras(o.node,['Выход','Описание','Тип_выхода','Раздел'])}</div>`;
+   return `<div class="pprog-output-card"><div class="pprog-output-header"><strong>Выход ${esc(o.id)}</strong><span>Тип выхода: ${esc(outputTypeLabel(o))}</span></div><div class="pprog-output-description">${esc(o.name||'Без описания')}</div><div class="pprog-facet-info"><span><b>Запись PProg:</b> Выход ${esc(o.id)}</span><span><b>Раздел элемента:</b> ${o.partitions.length?o.partitions.map(id=>esc(id)).join(', '):'Не включён в раздел'}</span></div>${o.partitions.length?`<div class="taglist">${o.partitions.map(id=>{const p=model.partitions.find(x=>String(x.id)===String(id));return p?`<button type="button" class="tag click" data-partition="${model.partitions.indexOf(p)}">Р ${esc(id)} · ${esc(p.name)}</button>`:''}).join('')}</div>`:''}${renderInlineExtras(o.node,['Выход','Описание','Тип_выхода','Раздел'])}</div>`;
  }).join('')}</div>`;
 }
 function relayTable(items,compact=false){
@@ -552,17 +542,8 @@ function relayTable(items,compact=false){
    const directType=lookup(r.node,'Тип_реле')||lookup(r.node,'Тип_выхода');
    const target=r.target;
    const associatedOutput=target?.kind==='output'?target.record:null;
-   const relayDevice=r.device||model.devices.find(d=>d.relays.includes(r));
-   const sp2ByDescription=!!associatedOutput&&/кдл/i.test(relayDevice?.typeName||'')&&/сп\s*[-–]?\s*2(?!\d)/i.test([r.name,associatedOutput.name].join(' '));
    const typeLabel=directType?pprogTypeLabel(directType):associatedOutput?outputTypeLabel(associatedOutput):pprogTypeLabel('');
-   const relation=target?.kind==='output'?`Выход ${esc(target.record.id)} · отдельные записи выхода и реле для адреса ${esc(r.id)}`:
-     target?.kind==='executor'?`Исполнительное устройство ${esc(target.record.id)} · объект управления`:
-     r.targetStatus==='ambiguous'?'Соответствие элементу неоднозначно':'Соответствующий элемент не найден в TXT';
-   const source=directType?'Тип указан в записи управления':
-     associatedOutput?`Тип выхода взят из записи «Выход ${esc(associatedOutput.id)}»`:
-     target?.kind==='executor'?'Реле управляет исполнительным устройством; тип «Реле (по умолчанию)» — значение PProg':
-     'Тип не задан · значение PProg по умолчанию';
-   return `<details class="relay-card"><summary><span class="relay-summary"><strong class="relay-title">Реле ${esc(r.id)}${r.name?` · ${esc(r.name)}`:''}</strong><span class="relay-params"><span class="pprog-relay-type-hint"><b>Тип:</b> ${esc(typeLabel)}<small>${esc(source)}</small></span><span class="pprog-relay-type-hint"><b>Объект управления:</b> ${relation}${sp2ByDescription?'<small>Указание на СП2 найдено в описании TXT; модель оборудования не подтверждается TXT.</small>':''}</span><span><b>Программа:</b> ${esc(relayProgramDisplay(r.program))}${programLabel?' ('+esc(programLabel)+')':''}</span><span><b>Задержка:</b> ${esc(controlTimeDisplay(r.delay,'0.0'))}</span><span><b>Время упр.:</b> ${esc(controlTimeDisplay(r.duration,'30.0'))}</span></span></span><span class="relay-count">${r.partitions.length} разд.</span><span class="relay-chevron">⌄</span></summary><div class="relay-body"><div class="relay-body-heading">Привязанные разделы управления (${r.partitions.length})</div>${r.partitions.length?`<div class="relay-partitions">${([...r.partitions].sort((a,b)=>Number(a)-Number(b))).map(id=>{const p=model.partitions.find(x=>x.id===id);return `<button class="relay-partition" data-partition="${p?model.partitions.indexOf(p):''}" ${p?'':'disabled'}><span class="relay-partition-name"><strong>Раздел ${esc(id)}</strong><span>${esc(p?.name||'Название не найдено в TXT')}</span></span><span class="relay-partition-arrow">›</span></button>`}).join('')}</div>`:'<div class="dim" style="padding:12px 0">Привязки управления к разделам не указаны</div>'}</div></details>`;
+   return `<details class="relay-card"><summary><span class="relay-summary"><strong class="relay-title">Реле ${esc(r.id)}${r.name?` · ${esc(r.name)}`:''}</strong><span class="relay-params"><span><b>Тип:</b> ${esc(typeLabel)}</span><span><b>Программа:</b> ${esc(relayProgramDisplay(r.program))}${programLabel?' ('+esc(programLabel)+')':''}</span><span><b>Задержка:</b> ${esc(controlTimeDisplay(r.delay,'0.0'))}</span><span><b>Время упр.:</b> ${esc(controlTimeDisplay(r.duration,'30.0'))}</span></span></span><span class="relay-count">${r.partitions.length} разд.</span><span class="relay-chevron">⌄</span></summary><div class="relay-body"><div class="relay-body-heading">Привязанные разделы управления (${r.partitions.length})</div>${r.partitions.length?`<div class="relay-partitions">${([...r.partitions].sort((a,b)=>Number(a)-Number(b))).map(id=>{const p=model.partitions.find(x=>x.id===id);return `<button class="relay-partition" data-partition="${p?model.partitions.indexOf(p):''}" ${p?'':'disabled'}><span class="relay-partition-name"><strong>Раздел ${esc(id)}</strong><span>${esc(p?.name||'Название не найдено в TXT')}</span></span><span class="relay-partition-arrow">›</span></button>`}).join('')}</div>`:'<div class="dim" style="padding:12px 0">Привязки управления к разделам не указаны</div>'}</div></details>`;
  }).join('')}</div>`;
 }
 function loopsPage(){let arr=model.loops;if(viewFilter==='linked')arr=arr.filter(l=>l.partitions.length);if(viewFilter==='unlinked')arr=arr.filter(l=>!l.partitions.length);if(viewFilter==='nonzero')arr=arr.filter(l=>l.type!==''&&l.type!=='0');if(listSearch)arr=arr.filter(l=>norm([l.id,l.name,l.type,loopTypeLabel(l.type),l.device.address,l.device.typeName,...l.partitions].join(' ')).includes(norm(listSearch)));return head('Шлейфы и зоны',`Всего ${model.loops.length} записей, из них ${model.loops.filter(l=>l.partitions.length).length} с привязкой к разделам`,button('Экспорт CSV','csv-loops','ghost','download'))+`<div class="panel pad"><div class="bar"><div style="display:flex;gap:8px;flex-wrap:wrap"><select class="filter" id="viewFilter" aria-label="Фильтр шлейфов"><option value="all" ${viewFilter==='all'?'selected':''}>Все шлейфы</option><option value="linked" ${viewFilter==='linked'?'selected':''}>В разделах</option><option value="unlinked" ${viewFilter==='unlinked'?'selected':''}>Без раздела</option><option value="nonzero" ${viewFilter==='nonzero'?'selected':''}>Тип ШС ≠ 0</option></select></div><input class="filter mini-search" id="listSearch" value="${esc(listSearch)}" placeholder="Поиск по шлейфам, адресу или описанию..."></div><div class="small muted" style="margin-bottom:8px">Найдено: ${arr.length}. Типы ШС расшифрованы по справочнику PProg 3.16.2; для типа 10 учитывается версия пульта.</div>${loopTable(arr)}</div>`}
@@ -587,7 +568,7 @@ function relaysPage(){
 function relayDevicePage(){
  const d=model.devices[relayDeviceIndex];if(!d)return relaysPage();
  return head(`${esc(d.typeName)} · адрес ${esc(d.address)}`,esc(d.description||'Записи управления PProg'),button('← К приборам','back-relay-devices','ghost'))+
- `<div class="panel pad"><div class="panel-header"><div><h3 class="panel-title">Реле прибора (${d.relays.length})</h3><p class="panel-sub">Только записи «Реле» из конфигурации. Если для того же канала есть строка «Выход», её свойства учтены в карточке реле, а повторной карточки в «Выходах» нет. Самостоятельные выходы и СП4 находятся в «Приборах».</p></div></div>${relayTable(d.relays.map(r=>({...r,device:d})),true)}</div>`;
+ `<div class="panel pad"><div class="panel-header"><div><h3 class="panel-title">Реле прибора (${d.relays.length})</h3></div></div>${relayTable(d.relays.map(r=>({...r,device:d})),true)}</div>`;
 }
 function ruPlural(count,one,few,many){const n=Math.abs(Number(count)||0),p=n%100,q=n%10;return p>=11&&p<=14?many:q===1?one:q>=2&&q<=4?few:many;}
 function linksPage(){
@@ -735,7 +716,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.10.17';
+  const LOCAL_BUILD='2026.11.10.18';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
