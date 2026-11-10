@@ -209,98 +209,18 @@
 #pprogUpdateNotice .pprogUpdateButton{background:#78adff;color:#091528;font-weight:800;border:0;padding:10px 14px;border-radius:9px;min-height:40px;touch-action:manipulation}
 @media (min-width:800px){#pprogUpdateNotice{bottom:20px}}
 
-/* v19 – unified information hierarchy, accessible mobile reading */
-:root{--readable-muted:#b4c6dc;--card-edge:#324862;--card-bg:#121f32;--metric-bg:#1a2b42}
-.device-directory{display:grid;gap:10px;padding:0!important;border:0;background:transparent;box-shadow:none}
-.device-directory-row.list-row{display:grid;grid-template-columns:44px minmax(0,1fr) 14px;gap:13px;align-items:start;padding:15px 14px;border:1px solid var(--card-edge);border-radius:16px;background:var(--card-bg);color:var(--text);margin:0;min-height:100px;transition:background .15s,border-color .15s}
-.device-directory-row.list-row:last-child{border:1px solid var(--card-edge)}
-.device-directory-row:hover,.relay-device-choice:hover{border-color:#547da9;background:#182940}
-.device-directory-row:active,.relay-device-choice:active{background:#213753}
-.device-directory .icon-tile{width:43px;height:43px;border-radius:12px;display:grid;place-items:center;background:#1a304b;color:#91c2ff;border:1px solid #355477}
-.device-directory .icon-tile .ico{width:20px;height:20px}
-.directory-info,.relay-card-info{display:flex;flex-direction:column;flex:1;min-width:0;gap:0;overflow-wrap:anywhere;text-align:left}
-.directory-topline{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 10px;min-width:0}
-.directory-info .directory-model,.relay-card-info .directory-model{font-size:16px;line-height:1.35;letter-spacing:-.015em;font-weight:750;color:#eef5ff;min-width:0}
-.directory-address{display:inline-flex;align-items:center;border:1px solid #3e5772;border-radius:7px;padding:3px 8px;background:#1a2c42;color:#b6cce7;font-size:11px;line-height:1.4;font-weight:650;white-space:nowrap;flex:none}
-.directory-place,.relay-card-info .directory-place,.directory-info .directory-place{display:block;max-width:100%;margin-top:8px;color:#cbdbee;background:transparent;border:0;border-radius:0;padding:0;font-size:14px;font-weight:500;line-height:1.45;overflow-wrap:anywhere}
-.directory-metrics{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:12px;min-width:0}
-.metric-pill{display:inline-flex;align-items:baseline;gap:7px;padding:5px 9px;border:1px solid #304862;border-radius:8px;background:var(--metric-bg);white-space:nowrap;max-width:100%;min-height:29px;line-height:1.35}
-.metric-name,.directory-info .metric-name,.relay-card-info .metric-name{display:inline;color:#b2c4db;font-size:11px;font-weight:600;letter-spacing:0}
-.metric-value,.directory-info .metric-value,.relay-card-info .metric-value{display:inline;color:#f2f7ff;font-size:13px;font-weight:750;font-variant-numeric:tabular-nums}
-.metric-pill.loops .metric-value{color:#a9ccff}.metric-pill.relays .metric-value{color:#d4e2ff}.metric-pill.outputs .metric-value{color:#9adfcd}.metric-pill.executors .metric-value{color:#d7c1fa}
-.directory-chevron,.relay-device-arrow{align-self:center;justify-self:end;color:#95b6db;font-size:25px;font-weight:400;line-height:1}
-.relay-device-list{gap:10px}
-.relay-device-choice{display:grid;grid-template-columns:43px minmax(0,1fr) 14px;align-items:start;gap:13px;padding:15px 14px;border-radius:16px;background:var(--card-bg);border-color:var(--card-edge);transition:background .15s,border-color .15s}
-.relay-device-icon{width:43px;height:43px;display:grid;place-items:center;border:1px solid #355477;background:#1a304b;border-radius:12px}
-.relay-device-icon .ico{width:20px;height:20px}
-.relay-card-info .metric-pill{margin:0}
-.detail-top .eyebrow{font-size:11px;color:#a9bedb;letter-spacing:.09em;font-weight:750}
-.detail-top h3{font-size:21px;line-height:1.28;margin:8px 0 3px;color:#edf5ff}
-.detail-top .detail-place{font-size:15px;margin-top:9px}
-.detail-metrics{margin-top:14px}
-.detail-top .directory-metrics .metric-pill{margin:0}
-.pprog-section-grid{gap:13px;align-items:stretch}
-.section-card{gap:0;padding:18px;min-width:0;background:var(--card-bg);border-color:var(--card-edge)}
-.section-card .section-id{font-size:11px;letter-spacing:.12em;color:#91beff;font-weight:750}
-.section-card .section-name{font-size:19px;letter-spacing:-.02em;line-height:1.34;margin:10px 0 0;min-height:0;color:#f1f6ff;font-weight:740;overflow-wrap:anywhere}
-.section-card .section-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:15px 0 0}
-.section-card .section-meta .metric-pill{display:flex;align-items:center;justify-content:space-between;white-space:normal;min-width:0;gap:9px;padding:9px 10px;background:#1a2c44}
-.section-card .section-meta .metric-name{font-size:11px;line-height:1.4}
-.section-card .section-meta .metric-value{font-size:16px;line-height:1.2;flex:none}
-.section-loops-label{font-size:11px;color:#92aac7;text-transform:uppercase;letter-spacing:.09em;font-weight:750;margin-top:17px}
-.section-card .section-loops{margin-top:8px;gap:6px}
-.section-card .section-loops .pill{font-size:12px;line-height:1.3;border-radius:8px;padding:5px 9px}
-.section-loops-empty{color:#9ab0ca;font-size:12px;margin-top:14px}
-.section-card .section-open{margin-top:18px;align-self:flex-start;min-height:40px;border-radius:10px;font-size:13px;font-weight:650}
-.relay-cards{gap:11px}
-.relay-card{background:var(--card-bg);border-color:var(--card-edge);border-radius:16px}
-.relay-card>summary{align-items:flex-start;gap:9px;padding:15px 13px}
-.relay-heading{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
-.relay-heading .relay-title{font-size:17px!important;font-weight:750;letter-spacing:-.02em;line-height:1.32;color:#f0f6ff}
-.relay-description{display:block;font-size:14px;line-height:1.4;color:#b8cce4;overflow-wrap:anywhere;font-weight:500}
-.relay-params{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:13px;line-height:1.45}
-.relay-param{display:flex;flex-direction:column;gap:5px;min-width:0;padding:10px;border-radius:10px;background:#1a2a41;border:1px solid #2c405a}
-.relay-param-label{display:block;font-size:11px;font-weight:650;color:#a3bbd9;line-height:1.35}
-.relay-param-value{display:block;font-size:13px;color:#e5effd;line-height:1.45;font-weight:600;overflow-wrap:anywhere}
-.relay-count{background:#203954;border:1px solid #335676;border-radius:8px;color:#b7d6ff;font-size:11px;line-height:1.4;padding:6px 8px;white-space:nowrap}
-.relay-chevron{line-height:1.25}
-.relay-body-heading{font-size:13px;color:#c9def7}
-.pprog-output-cards{grid-template-columns:repeat(auto-fit,minmax(min(100%,310px),1fr));gap:11px}
-.pprog-output-card{padding:16px;border-color:var(--card-edge);background:var(--card-bg);border-radius:16px}
-.pprog-output-header{margin:0 0 5px}
-.pprog-output-header strong{font-size:17px;color:#f0f6ff;line-height:1.3}
-.pprog-output-description{color:#c7d9ed;font-size:14px;line-height:1.5;margin:7px 0 14px;font-weight:500}
-.pprog-output-properties{display:flex;flex-direction:column;gap:8px}
-.output-property{display:grid;grid-template-columns:90px minmax(0,1fr);gap:10px;min-width:0;align-items:start;padding:10px 11px;background:#1a2a41;border:1px solid #2b415b;border-radius:10px}
-.output-label{font-size:12px;line-height:1.45;color:#a8bdd8;font-weight:650}
-.output-value{font-size:13px;line-height:1.5;color:#e6f0ff;font-weight:600;overflow-wrap:anywhere}
-.output-sections{margin-top:12px}
-.output-extra{display:block;color:#adc1d9;margin-top:10px;font-size:12px;line-height:1.5}
-.tab{font-size:13px;font-weight:700;letter-spacing:0}
-.tab.active{border-bottom-color:#75a9ff;color:#f1f7ff}
-.panel-sub,.page-sub{color:#abc0da}
-@media(max-width:650px){
- .device-directory-row.list-row,.relay-device-choice{grid-template-columns:40px minmax(0,1fr) 12px;gap:10px;padding:14px 11px}
- .device-directory .icon-tile,.relay-device-icon{width:40px;height:40px}
- .directory-model,.directory-info .directory-model,.relay-card-info .directory-model{font-size:15px}
- .directory-address{font-size:11px}
- .section-card{padding:16px}
- .relay-params{grid-template-columns:minmax(0,1fr);gap:7px}
- .relay-param{display:grid;grid-template-columns:92px minmax(0,1fr);gap:9px;align-items:start;padding:9px 10px}
- .relay-param-label{font-size:12px}
- .relay-param-value{font-size:13px}
- .pprog-output-card{padding:14px}
- .tab{font-size:13px;min-height:46px}
+/* v20 – conservative polish of the established v18 layout (no boxed parameter grid). */
+.relay-params{gap:7px;font-size:13px;line-height:1.6}
+.relay-summary{gap:7px}
+.section-card .section-meta{font-size:13px;line-height:1.6}
+.device-directory-row .directory-info small{font-size:13px;line-height:1.55}
+.relay-device-info small{font-size:13px;line-height:1.5}
+@media(max-width:530px){
+ .relay-card summary{padding:14px 12px}
+ .relay-params{font-size:13px;line-height:1.6}
+ .device-directory-row .directory-info{gap:6px}
+ .section-card{gap:12px}
 }
-@media(max-width:365px){
- .section-card .section-meta{grid-template-columns:minmax(0,1fr)}
- .relay-card>summary{gap:6px;padding:13px 9px}
- .relay-count{font-size:10px;padding:4px 6px}
- .relay-param{grid-template-columns:83px minmax(0,1fr)}
- .directory-address{padding:3px 6px}
-}
-@media(prefers-reduced-motion:reduce){.device-directory-row.list-row,.relay-device-choice{transition:none}}
-
 </style>
 </head>
 <body>
@@ -445,10 +365,7 @@ function overview(){const linked=model.loops.filter(x=>x.partitions.length).leng
 // The original output records remain in the raw model and TXT export.
 function standaloneOutputs(device){return device.outputs.filter(o=>!o.control);}
 function visibleOutputRows(items){return items.filter(o=>!o.control);}
-function metricPill(label,count,variant=''){
- return `<span class="metric-pill ${variant}"><span class="metric-name">${esc(label)}</span><strong class="metric-value">${esc(count)}</strong></span>`;
-}
-function devicesPage(){if(!model.devices.length)return head('Приборы','Приборы, зарегистрированные в пульте')+`<div class="panel">${empty('В этом файле нет записей приборов')}</div>`;const d=model.devices[Math.max(0,Math.min(deviceIndex,model.devices.length-1))];const ownOutputs=standaloneOutputs(d);if(deviceTab==='outputs'&&!ownOutputs.length)deviceTab=d.relays.length?'relays':'loops';const tabs=[['loops',`Шлейфы (${d.loops.length})`],['relays',`Реле (${d.relays.length})`],...(ownOutputs.length?[['outputs',`Выходы (${ownOutputs.length})`]]:[]),...(d.executors.length?[['executors',`Исп. устройства (${d.executors.length})`]]:[])];let inner='';if(deviceTab==='loops')inner=loopTable(d.loops.map(l=>({...l,device:d})),true);if(deviceTab==='relays')inner=relayTable(d.relays.map(r=>({...r,device:d})),true);if(deviceTab==='outputs')inner=outputCards(ownOutputs);if(deviceTab==='executors')inner=executorCards(d.executors,d);if(false&&deviceTab==='details')inner=`<div class="info-grid">${fieldGrid(d.node.fields)}</div><h4 style="font-size:12px;margin:23px 0 9px">Остальные записи прибора</h4>${d.node.children.map(n=>nodeCard(n,1)).join('')||empty('Нет вложенных записей')}`;if(!deviceOpened)return head('Приборы',`Устройства в конфигурации · ${model.devices.length}`)+`<div class="panel pad device-directory">${model.devices.map((x,i)=>`<button class="list-row device-directory-row" data-device="${i}"><span class="icon-tile">${icon('cpu')}</span><span class="directory-info"><span class="directory-topline"><strong class="directory-model">${esc(x.typeName)}</strong><span class="directory-address">Адрес ${esc(x.address)}</span></span>${x.description?`<span class="directory-place">${esc(x.description)}</span>`:''}<span class="directory-metrics">${metricPill('Шлейфы',x.loops.length,'loops')}${metricPill('Реле',x.relays.length,'relays')}${metricPill('Выходы',standaloneOutputs(x).length,'outputs')}${x.executors.length?metricPill('Исп. устройства',x.executors.length,'executors'):''}</span></span><span class="directory-chevron" aria-hidden="true">›</span></button>`).join('')}</div>`;return head('Прибор №'+esc(d.address),esc(d.typeName),button('← Все приборы','back-devices','ghost'))+`<div class="panel device-detail"><div class="detail-top"><div><div class="eyebrow">ПРИБОР · АДРЕС ${esc(d.address)}</div><h3>${esc(d.typeName)}</h3>${d.description?`<div class="directory-place detail-place">${esc(d.description)}</div>`:''}<div class="directory-metrics detail-metrics">${metricPill('Шлейфы',d.loops.length,'loops')}${metricPill('Реле',d.relays.length,'relays')}${metricPill('Выходы',ownOutputs.length,'outputs')}${d.executors.length?metricPill('Исп. устройства',d.executors.length,'executors'):''}${d.version?`<span class="metric-pill"><span class="metric-name">Версия</span><strong class="metric-value">${esc(d.version)}</strong></span>`:''}</div></div>${button('Весь TXT','raw-device','sm','code')}</div><div class="tabs">${tabs.map(([id,txt])=>`<button class="tab ${deviceTab===id?'active':''}" data-tab="${id}">${txt}</button>`).join('')}</div>${inner}`}
+function devicesPage(){if(!model.devices.length)return head('Приборы','Приборы, зарегистрированные в пульте')+`<div class="panel">${empty('В этом файле нет записей приборов')}</div>`;const d=model.devices[Math.max(0,Math.min(deviceIndex,model.devices.length-1))];const ownOutputs=standaloneOutputs(d);if(deviceTab==='outputs'&&!ownOutputs.length)deviceTab=d.relays.length?'relays':'loops';const tabs=[['loops',`Шлейфы (${d.loops.length})`],['relays',`Реле (${d.relays.length})`],...(ownOutputs.length?[['outputs',`Выходы (${ownOutputs.length})`]]:[]),...(d.executors.length?[['executors',`Исп. устройства (${d.executors.length})`]]:[])];let inner='';if(deviceTab==='loops')inner=loopTable(d.loops.map(l=>({...l,device:d})),true);if(deviceTab==='relays')inner=relayTable(d.relays.map(r=>({...r,device:d})),true);if(deviceTab==='outputs')inner=outputCards(ownOutputs);if(deviceTab==='executors')inner=executorCards(d.executors,d);if(false&&deviceTab==='details')inner=`<div class="info-grid">${fieldGrid(d.node.fields)}</div><h4 style="font-size:12px;margin:23px 0 9px">Остальные записи прибора</h4>${d.node.children.map(n=>nodeCard(n,1)).join('')||empty('Нет вложенных записей')}`;if(!deviceOpened)return head('Приборы',`Устройства в конфигурации · ${model.devices.length}`)+`<div class="panel pad device-directory">${model.devices.map((x,i)=>`<button class="list-row device-directory-row" data-device="${i}"><span class="icon-tile">${icon('cpu')}</span><span class="directory-info"><strong>Адрес ${esc(x.address)} · ${esc(x.typeName)}</strong>${x.description?`<span class="device-desc">${esc(x.description)}</span>`:''}<small>${x.loops.length} шлейфов · ${x.relays.length} реле · ${standaloneOutputs(x).length} выходов${x.executors.length?' · '+x.executors.length+' ИУ':''}</small></span><span class="directory-chevron">›</span></button>`).join('')}</div>`;return head('Прибор №'+esc(d.address),esc(d.typeName),button('← Все приборы','back-devices','ghost'))+`<div class="panel device-detail"><div class="detail-top"><div><div class="eyebrow">Адрес ${esc(d.address)} · Тип ${esc(d.typeId)}</div><h3>${esc(d.typeName)}</h3>${d.description?`<div class="device-desc">${esc(d.description)}</div>`:`<div class="dim" style="margin:5px 0 10px">Описание прибора в TXT не указано</div>`}<div class="taglist">${pill('ШС: '+d.loops.length,'blue')}${pill('Реле: '+d.relays.length)}${pill('Выходы: '+ownOutputs.length)}${d.executors.length?pill('ИУ: '+d.executors.length,'blue'):''}${d.version?pill('Версия: '+d.version,'green'):''}</div></div>${button('Весь TXT','raw-device','sm','code')}</div><div class="tabs">${tabs.map(([id,txt])=>`<button class="tab ${deviceTab===id?'active':''}" data-tab="${id}">${txt}</button>`).join('')}</div>${inner}`}
 function loopTable(items,compact=false){return items.length?`<div class="table-wrap"><table class="data-table zone-table"><thead><tr>${!compact?'<th>Прибор</th>':''}<th>Шлейф</th><th>Описание</th><th>Раздел</th></tr></thead><tbody>${items.map(l=>`<tr class="${l.type==='0'&&!l.partitions.length?'inactive':''}">${!compact?`<td><button class="td-button" data-device="${model.devices.indexOf(l.device)}">${esc(l.device.typeName)} · ${esc(l.device.address)}</button></td>`:''}<td class="mono">${esc(l.id)}</td><td><div>${esc(l.name||'—')}</div><div class="small muted" style="margin-top:4px">Тип: ${esc(loopTypeLabel(l.type))}</div></td><td>${l.partitions.length?l.partitions.map(id=>{const p=model.partitions.find(x=>x.id===id);return p?`<button class="td-button" data-partition="${model.partitions.indexOf(p)}">${esc(id)} · ${esc(p.name)}</button>`:pill('Раздел '+id+' не найден','amber')}).join(', '):'<span class="dim">Не указан</span>'}</td></tr>`).join('')}</tbody></table></div>`:empty('Шлейфы отсутствуют','list')}
 // Функциональные типы ниже относятся к записи «Выход». Запись «Реле» независима.
 // Расшифровки кодов проверялись на тестовом экспорте 123333.TXT.
@@ -628,66 +545,24 @@ function outputCards(items){
  const display=visibleOutputRows(items);
  if(!display.length)return empty('Выходов нет','zap');
  return `<div class="pprog-output-cards">${display.map(o=>{
-   const extras=o.node.fields.some(f=>!['Выход','Описание','Тип_выхода','Раздел'].includes(f.key));
-   return `<div class="pprog-output-card">
-      <div class="pprog-output-header"><strong>Выход ${esc(o.id)}</strong></div>
-      <div class="pprog-output-description">${esc(o.name||'Без описания')}</div>
-      <div class="pprog-output-properties">
-       <div class="output-property"><span class="output-label">Тип выхода</span><strong class="output-value">${esc(outputTypeLabel(o))}</strong></div>
-       <div class="output-property"><span class="output-label">Раздел</span><strong class="output-value">${o.partitions.length?o.partitions.map(id=>esc(id)).join(', '):'Не указан'}</strong></div>
-      </div>
-      ${o.partitions.length?`<div class="taglist output-sections">${o.partitions.map(id=>{const p=model.partitions.find(x=>String(x.id)===String(id));return p?`<button type="button" class="tag click" data-partition="${model.partitions.indexOf(p)}">Р ${esc(id)} · ${esc(p.name)}</button>`:''}).join('')}</div>`:''}
-      ${extras?`<div class="output-extra">${renderInlineExtras(o.node,['Выход','Описание','Тип_выхода','Раздел'])}</div>`:''}
-   </div>`;
+   return `<div class="pprog-output-card"><div class="pprog-output-header"><strong>Выход ${esc(o.id)}</strong><span>Тип выхода: ${esc(outputTypeLabel(o))}</span></div><div class="pprog-output-description">${esc(o.name||'Без описания')}</div><div class="pprog-facet-info"><span><b>Запись PProg:</b> Выход ${esc(o.id)}</span><span><b>Раздел элемента:</b> ${o.partitions.length?o.partitions.map(id=>esc(id)).join(', '):'Не включён в раздел'}</span></div>${o.partitions.length?`<div class="taglist">${o.partitions.map(id=>{const p=model.partitions.find(x=>String(x.id)===String(id));return p?`<button type="button" class="tag click" data-partition="${model.partitions.indexOf(p)}">Р ${esc(id)} · ${esc(p.name)}</button>`:''}).join('')}</div>`:''}${renderInlineExtras(o.node,['Выход','Описание','Тип_выхода','Раздел'])}</div>`;
  }).join('')}</div>`;
 }
 function relayTable(items,compact=false){
  if(!items.length)return empty('В TXT нет записей «Реле»','zap');
  return `<div class="relay-cards">${items.map(r=>{
-  const programLabel=lookup(r.node,'Название программы')||lookup(r.node,'Описание программы')||'';
-  const directType=lookup(r.node,'Тип_реле')||lookup(r.node,'Тип_выхода');
-  const target=r.target;
-  const associatedOutput=target?.kind==='output'?target.record:null;
-  const typeLabel=directType?pprogTypeLabel(directType):associatedOutput?outputTypeLabel(associatedOutput):pprogTypeLabel('');
-  const metrics=[
-   ['Тип',typeLabel],
-   ['Программа',relayProgramDisplay(r.program)+(programLabel?' ('+programLabel+')':'')],
-   ['Задержка',controlTimeDisplay(r.delay,'0.0')],
-   ['Время управления',controlTimeDisplay(r.duration,'30.0')]
-  ];
-  return `<details class="relay-card">
-    <summary>
-      <span class="relay-summary">
-       <span class="relay-heading"><strong class="relay-title">Реле ${esc(r.id)}</strong>${r.name?`<span class="relay-description">${esc(r.name)}</span>`:''}</span>
-       <span class="relay-params">${metrics.map(([k,v])=>`<span class="relay-param"><span class="relay-param-label">${esc(k)}</span><span class="relay-param-value">${esc(v)}</span></span>`).join('')}</span>
-      </span>
-      <span class="relay-count">${r.partitions.length} разд.</span><span class="relay-chevron">⌄</span>
-    </summary>
-    <div class="relay-body">
-     <div class="relay-body-heading">Привязанные разделы управления (${r.partitions.length})</div>
-     ${r.partitions.length?`<div class="relay-partitions">${([...r.partitions].sort((a,b)=>Number(a)-Number(b))).map(id=>{const p=model.partitions.find(x=>x.id===id);return `<button class="relay-partition" data-partition="${p?model.partitions.indexOf(p):''}" ${p?'':'disabled'}><span class="relay-partition-name"><strong>Раздел ${esc(id)}</strong><span>${esc(p?.name||'Название не найдено в TXT')}</span></span><span class="relay-partition-arrow">›</span></button>`}).join('')}</div>`:'<div class="dim" style="padding:12px 0">Привязки управления к разделам не указаны</div>'}
-    </div>
-   </details>`;
+   const programLabel=lookup(r.node,'Название программы')||lookup(r.node,'Описание программы')||'';
+   const directType=lookup(r.node,'Тип_реле')||lookup(r.node,'Тип_выхода');
+   const target=r.target;
+   const associatedOutput=target?.kind==='output'?target.record:null;
+   const typeLabel=directType?pprogTypeLabel(directType):associatedOutput?outputTypeLabel(associatedOutput):pprogTypeLabel('');
+   return `<details class="relay-card"><summary><span class="relay-summary"><strong class="relay-title">Реле ${esc(r.id)}${r.name?` · ${esc(r.name)}`:''}</strong><span class="relay-params"><span><b>Тип:</b> ${esc(typeLabel)}</span><span><b>Программа:</b> ${esc(relayProgramDisplay(r.program))}${programLabel?' ('+esc(programLabel)+')':''}</span><span><b>Задержка:</b> ${esc(controlTimeDisplay(r.delay,'0.0'))}</span><span><b>Время упр.:</b> ${esc(controlTimeDisplay(r.duration,'30.0'))}</span></span></span><span class="relay-count">${r.partitions.length} разд.</span><span class="relay-chevron">⌄</span></summary><div class="relay-body"><div class="relay-body-heading">Привязанные разделы управления (${r.partitions.length})</div>${r.partitions.length?`<div class="relay-partitions">${([...r.partitions].sort((a,b)=>Number(a)-Number(b))).map(id=>{const p=model.partitions.find(x=>x.id===id);return `<button class="relay-partition" data-partition="${p?model.partitions.indexOf(p):''}" ${p?'':'disabled'}><span class="relay-partition-name"><strong>Раздел ${esc(id)}</strong><span>${esc(p?.name||'Название не найдено в TXT')}</span></span><span class="relay-partition-arrow">›</span></button>`}).join('')}</div>`:'<div class="dim" style="padding:12px 0">Привязки управления к разделам не указаны</div>'}</div></details>`;
  }).join('')}</div>`;
 }
 function loopsPage(){let arr=model.loops;if(viewFilter==='linked')arr=arr.filter(l=>l.partitions.length);if(viewFilter==='unlinked')arr=arr.filter(l=>!l.partitions.length);if(viewFilter==='nonzero')arr=arr.filter(l=>l.type!==''&&l.type!=='0');if(listSearch)arr=arr.filter(l=>norm([l.id,l.name,l.type,loopTypeLabel(l.type),l.device.address,l.device.typeName,...l.partitions].join(' ')).includes(norm(listSearch)));return head('Шлейфы и зоны',`Всего ${model.loops.length} записей, из них ${model.loops.filter(l=>l.partitions.length).length} с привязкой к разделам`,button('Экспорт CSV','csv-loops','ghost','download'))+`<div class="panel pad"><div class="bar"><div style="display:flex;gap:8px;flex-wrap:wrap"><select class="filter" id="viewFilter" aria-label="Фильтр шлейфов"><option value="all" ${viewFilter==='all'?'selected':''}>Все шлейфы</option><option value="linked" ${viewFilter==='linked'?'selected':''}>В разделах</option><option value="unlinked" ${viewFilter==='unlinked'?'selected':''}>Без раздела</option><option value="nonzero" ${viewFilter==='nonzero'?'selected':''}>Тип ШС ≠ 0</option></select></div><input class="filter mini-search" id="listSearch" value="${esc(listSearch)}" placeholder="Поиск по шлейфам, адресу или описанию..."></div><div class="small muted" style="margin-bottom:8px">Найдено: ${arr.length}. Типы ШС расшифрованы по справочнику PProg 3.16.2; для типа 10 учитывается версия пульта.</div>${loopTable(arr)}</div>`}
 function partitionsSwitch(){const groupCount=model.partitionGroups.length;return `<div class="partition-mode-switch" role="group" aria-label="Выбор вида разделов"><button type="button" data-partitions-view="partitions" class="${partitionsView==='partitions'?'active':''}" aria-pressed="${partitionsView==='partitions'}">Разделы <span>${model.partitions.length}</span></button><button type="button" data-partitions-view="groups" class="${partitionsView==='groups'?'active':''}" aria-pressed="${partitionsView==='groups'}">Группы разделов <span>${groupCount}</span></button></div>`}
 function partitionGroupsPage(){const groups=model.partitionGroups;return `<div class="cols-3">${groups.map(g=>`<div class="panel section-card"><div class="section-id">ГРУППА ${g.id?esc(g.id):'РАЗДЕЛОВ'}</div><div class="section-name">${esc(g.name)}</div><div class="section-meta">${g.partitions.length} разделов</div><div class="taglist" style="margin:0">${g.partitions.map(id=>{const ix=model.partitions.findIndex(p=>p.id===id);const title=model.partitions[ix]?.name||'';return ix>=0?`<button type="button" class="partition-group-part" data-partition="${ix}" title="${esc(title)}">Р ${esc(id)} · ${esc(title)}</button>`:`<span class="pill">Р ${esc(id)}</span>`}).join('')||'<span class="small muted">Привязанные разделы не указаны</span>'}</div></div>`).join('')||`<div class="panel pad">${empty('В этом TXT группы разделов не заданы','layers')}</div>`}</div>`}
-function partitionsPage(){
- const isGroup=partitionsView==='groups';
- return head(isGroup?'Группы разделов':'Разделы системы',isGroup?'Группы из секции «Группы разделов» в TXT':'Выберите раздел, чтобы посмотреть его состав')+
- partitionsSwitch()+
- (isGroup?partitionGroupsPage():`<div class="cols-3 pprog-section-grid">${model.partitions.map((p,i)=>{
-   const outputs=visibleOutputRows(p.outputs);
-   return `<div class="panel section-card">
-     <div class="section-id">РАЗДЕЛ ${esc(p.id)}</div>
-     <div class="section-name">${esc(p.name)}</div>
-     <div class="section-meta">${metricPill('Шлейфы',p.loops.length,'loops')}${metricPill('Реле управления',p.relays.length,'relays')}${outputs.length?metricPill('Выходы',outputs.length,'outputs'):''}${p.executors.length?metricPill('Исп. устройства',p.executors.length,'executors'):''}</div>
-     ${p.loops.length?`<div class="section-loops-label">Шлейфы в разделе</div><div class="taglist section-loops">${p.loops.slice(0,6).map(l=>pill('ШС '+l.id,'blue')).join('')}${p.loops.length>6?pill('+'+(p.loops.length-6)):''}</div>`:'<div class="section-loops-empty">Шлейфы не указаны</div>'}
-     <button type="button" class="btn sm ghost section-open" data-partition="${i}">Открыть состав ${icon('arrow')}</button>
-    </div>`;
- }).join('')||`<div class="panel">${empty('Разделов нет')}</div>`}</div>`);
-}
+function partitionsPage(){const isGroup=partitionsView==='groups';return head(isGroup?'Группы разделов':'Разделы системы',isGroup?'Группы из секции «Группы разделов» в TXT':'Логические группы зон · нажмите на раздел, чтобы увидеть состав')+partitionsSwitch()+(isGroup?partitionGroupsPage():`<div class="cols-3">${model.partitions.map((p,i)=>`<div class="panel section-card"><div class="section-id">РАЗДЕЛ ${esc(p.id)}</div><div class="section-name">${esc(p.name)}</div><div class="section-meta"><strong>${p.loops.length}</strong> шлейфов${visibleOutputRows(p.outputs).length?` · <strong>${visibleOutputRows(p.outputs).length}</strong> выходов`:''}${p.executors.length?` · <strong>${p.executors.length}</strong> ИУ`:''} · <strong>${p.relays.length}</strong> управляющих реле</div><div class="taglist" style="margin:0">${p.loops.slice(0,6).map(l=>pill('ШС '+l.id,'blue')).join('')}${p.loops.length>6?pill('+'+(p.loops.length-6)):''}</div><button class="btn sm ghost" data-partition="${i}">Открыть состав ${icon('arrow')}</button></div>`).join('')||`<div class="panel">${empty('Разделов нет')}</div>`}</div>`)}
 function partitionLoops(items){return items.length?`<div class="partition-loop-list">${items.map(l=>`<button class="partition-loop-card partition-loop-click" data-device="${model.devices.indexOf(l.device)}"><span class="partition-loop-head"><strong>Прибор ${esc(l.device.address)} · Шлейф ${esc(l.id)}</strong></span>${l.name?`<span class="partition-loop-description">${esc(l.name)}</span>`:''}<span class="small muted">Тип: ${esc(loopTypeLabel(l.type))}</span></button>`).join('')}</div>`:empty('В разделе нет шлейфов','list')}
 function partitionDetail(){
  const p=model.partitions[partitionIndex];
@@ -700,8 +575,8 @@ function partitionDetail(){
 }
 function relaysPage(){
  const ds=model.devices.filter(d=>d.relays.length>0);
- return head('Реле',`Приборы с реле · всего ${model.relays.length}`,button('Экспорт CSV реле','csv-relays','ghost','download'))+
- `<div class="panel pad"><div class="relay-device-list">${ds.map(d=>`<button class="relay-device-choice" data-relay-device="${model.devices.indexOf(d)}"><span class="relay-device-icon">${icon('cpu')}</span><span class="relay-card-info"><span class="directory-topline"><strong class="directory-model">${esc(d.typeName)}</strong><span class="directory-address">Адрес ${esc(d.address)}</span></span>${d.description?`<span class="directory-place">${esc(d.description)}</span>`:''}<span class="directory-metrics">${metricPill('Реле',d.relays.length,'relays')}</span></span><span class="relay-device-arrow" aria-hidden="true">›</span></button>`).join('')||empty('В TXT нет записей «Реле»')}</div></div>`;
+ return head('Реле',`Записи управления «Реле» из PProg · ${model.relays.length} реле`,button('Экспорт CSV реле','csv-relays','ghost','download'))+
+ `<div class="panel pad"><div class="relay-device-list">${ds.map(d=>`<button class="relay-device-choice" data-relay-device="${model.devices.indexOf(d)}"><span class="relay-device-icon">${icon('cpu')}</span><span class="relay-device-info"><strong>Адрес ${esc(d.address)} · ${esc(d.typeName)}</strong>${d.description?`<span>${esc(d.description)}</span>`:''}<small>${d.relays.length} реле</small></span><span class="relay-device-arrow">›</span></button>`).join('')||empty('В TXT нет записей «Реле»')}</div></div>`;
 }
 function relayDevicePage(){
  const d=model.devices[relayDeviceIndex];if(!d)return relaysPage();
@@ -854,7 +729,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.10.19';
+  const LOCAL_BUILD='2026.11.10.20';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
