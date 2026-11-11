@@ -755,6 +755,12 @@ a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
 }
 @media(prefers-reduced-motion:reduce){.pprog-device-loop-section{transition:none}}
 
+
+/* A relay device detail keeps its model and firmware label but no aggregate counts. */
+.pprog-device-inline-version{
+ display:inline-flex;align-self:flex-start;max-width:100%;color:#9fb5d2;
+ font-size:11px;line-height:1.4;font-variant-numeric:tabular-nums;
+}
 </style>
 </head>
 <body>
@@ -968,22 +974,27 @@ function deviceLoopRows(items) {
  }).join('')}</div>`;
 }
 
-function deviceHero(d){
+function deviceHero(d,showSummary=true){
  const title=String(d.description??'').trim();
+ // Firmware version is optional in TXT. Never infer missing versions.
+ const versionLabel=String(d.version??'').trim()||'не указана';
  const summary=[
   ['ШС',`${linkedDeviceLoops(d).length}/${d.physicalLoops??'—'}`],
   ['РЕЛЕ',d.relays.length],
   ['ВЫХОДЫ',d.outputs.length],
   ['ИУ',d.executors.length],
-  ...(d.version?[['ВЕРСИЯ',d.version]]:[])
+  ['ВЕРСИЯ',versionLabel]
  ];
  return `<div class="pprog-device-hero">
-    <span class="pprog-device-hero-address"><span>АДРЕС</span><strong>${esc(deviceAddressDisplay(d.address))}</strong></span>
-    <div class="pprog-device-hero-name"><h2 class="${title?'':'is-unnamed'}">${esc(title||'Без названия')}</h2><span class="pprog-type-badge">${esc(d.typeName)}</span></div>
-  </div>
-  <div class="pprog-device-summary">${summary.map(([name,value])=>`<span class="pprog-device-summary-badge"><span>${esc(name)}</span><strong>${esc(value)}</strong></span>`).join('')}</div>`;
+   <span class="pprog-device-hero-address"><span>АДРЕС</span><strong>${esc(deviceAddressDisplay(d.address))}</strong></span>
+   <div class="pprog-device-hero-name">
+     <h2 class="${title?'':'is-unnamed'}">${esc(title||'Без названия')}</h2>
+     <span class="pprog-type-badge">${esc(d.typeName)}</span>
+     ${showSummary?'':`<span class="pprog-device-inline-version">Версия: ${esc(versionLabel)}</span>`}
+   </div>
+ </div>
+ ${showSummary?`<div class="pprog-device-summary">${summary.map(([name,value])=>`<span class="pprog-device-summary-badge"><span>${esc(name)}</span><strong>${esc(value)}</strong></span>`).join('')}</div>`:''}`;
 }
-
 function deviceDetailPanel(d,tabs,inner) {
  return `<div class="pprog-device-actions">${button('← Все приборы','back-devices','ghost')}${button('Весь TXT','raw-device','sm','code')}</div>
  <div class="panel device-detail pprog-device-detail">
@@ -1245,9 +1256,9 @@ function partitionsPage(){
 
 function sectionLoopTypeTag(loop){
  const code=String(loop.type??'').trim();
- if(!code||code==='0')return '';
+ // Type 0 is a valid PProg code «по умолчанию» and must remain visible.
+ // Missing or unrecognized codes are explicitly shown, not silently hidden.
  let label=loopTypeLabel(code);
- if(label==='по умолчанию'||label==='Тип отсутствует в TXT'||label.startsWith('Неизвестный тип'))return '';
  if(code==='10'&&label.startsWith('ручной пуск ('))label='ручной пуск';
  return label;
 }
@@ -1309,7 +1320,7 @@ function relayDevicePage(){
  const d=model.devices[relayDeviceIndex];if(!d)return relaysPage();
  return `<div class="pprog-device-actions">${button('← К списку реле','back-relay-devices','ghost')}</div>
  <div class="panel device-detail pprog-device-detail pprog-relay-device-detail">
- ${deviceHero(d)}
+ ${deviceHero(d,false)}
  <div class="pprog-device-relay-heading">Реле прибора <strong>${d.relays.length}</strong></div>
  ${relayTable(d.relays.map(r=>({...r,device:d})),true)}
  </div>`;
@@ -1492,7 +1503,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.11.02';
+  const LOCAL_BUILD='2026.11.11.03';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
