@@ -1040,10 +1040,14 @@ function deviceHero(d,showSummary=true){
  const title=String(d.description??'').trim();
  // Firmware version is optional in TXT. Never infer missing versions.
  const versionLabel=String(d.version??'').trim()||'не указана';
+ // Outputs that share a number with a Relay are the ELEMENT facet of
+ // that same channel, not an additional independent physical output.
+ // Use exactly the same standalone-output selection as the Outputs tab.
+ const independentOutputs=standaloneOutputs(d);
  const summary=[
   ['ШС',`${linkedDeviceLoops(d).length}/${d.physicalLoops??'—'}`],
   ['РЕЛЕ',d.relays.length],
-  ['ВЫХОДЫ',d.outputs.length],
+  ...(independentOutputs.length?[['ВЫХОДЫ',independentOutputs.length]]:[]),
   ['ИУ',d.executors.length],
   ['ВЕРСИЯ',versionLabel]
  ];
@@ -1564,7 +1568,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.11.06';
+  const LOCAL_BUILD='2026.11.11.07';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
