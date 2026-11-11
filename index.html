@@ -761,6 +761,68 @@ a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
  display:inline-flex;align-self:flex-start;max-width:100%;color:#9fb5d2;
  font-size:11px;line-height:1.4;font-variant-numeric:tabular-nums;
 }
+
+/* Directory statistic chips follow the compact device-detail summary tiles.
+   Keep the relay count inside its original right-aligned type row. */
+.pprog-device-list .pprog-device-stats{
+ display:flex;
+ flex-wrap:wrap;
+ align-items:center;
+ column-gap:6px;
+ row-gap:6px;
+ margin-top:6px;
+ line-height:normal;
+}
+.pprog-device-list .pprog-device-stats>span+span::before{
+ content:none;
+ padding:0;
+}
+.pprog-device-list .pprog-device-stats .pprog-stat-chip,
+.pprog-relay-list .pprog-relay-device-count.pprog-stat-chip{
+ display:inline-flex;
+ box-sizing:border-box;
+ flex:0 0 auto;
+ align-items:baseline;
+ gap:7px;
+ min-height:32px;
+ padding:7px 9px;
+ border:1px solid #344a65;
+ border-radius:5px;
+ background:#1a2a40;
+ color:#ecf4ff;
+ white-space:nowrap;
+ line-height:1.2;
+ font-variant-numeric:tabular-nums;
+}
+.pprog-device-list .pprog-stat-chip>span,
+.pprog-relay-list .pprog-relay-device-count.pprog-stat-chip>span{
+ display:inline;
+ padding:0;
+ color:#a8c1dc;
+ font-size:10px;
+ font-weight:700;
+ letter-spacing:.045em;
+}
+.pprog-device-list .pprog-stat-chip>strong,
+.pprog-relay-list .pprog-relay-device-count.pprog-stat-chip>strong{
+ color:#ecf4ff;
+ font-size:12px;
+ font-weight:800;
+}
+@media(max-width:530px){
+ .pprog-device-list .pprog-device-stats{gap:5px;margin-top:5px}
+ .pprog-device-list .pprog-device-stats .pprog-stat-chip,
+ .pprog-relay-list .pprog-relay-device-count.pprog-stat-chip{
+  gap:5px;
+  min-height:28px;
+  padding:5px 7px;
+ }
+ .pprog-device-list .pprog-stat-chip>span,
+ .pprog-relay-list .pprog-relay-device-count.pprog-stat-chip>span{font-size:9px}
+ .pprog-device-list .pprog-stat-chip>strong,
+ .pprog-relay-list .pprog-relay-device-count.pprog-stat-chip>strong{font-size:11px}
+}
+
 </style>
 </head>
 <body>
@@ -1009,8 +1071,9 @@ function devicesPage(){if(!model.devices.length)return head('Приборы','П
   <strong class="pprog-device-name${x.description?'':' is-unnamed'}">${esc(x.description||'Без названия')}</strong>
   <span class="pprog-device-type">${esc(x.typeName)}</span>
   <span class="pprog-device-stats">
-   <span><b>${linkedDeviceLoops(x).length}/${esc(x.physicalLoops??'—')}</b> шлейфов</span>
-   <span><b>${x.relays.length}</b> реле</span>
+   <span class="pprog-stat-chip"><span>ШС</span><strong>${linkedDeviceLoops(x).length}/${esc(x.physicalLoops??'—')}</strong></span>
+   <span class="pprog-stat-chip"><span>РЕЛЕ</span><strong>${x.relays.length}</strong></span>
+   <span class="pprog-stat-chip"><span>ИУ</span><strong>${x.executors.length}</strong></span>
   </span>
  </span>
  <span class="directory-chevron pprog-device-chevron" aria-hidden="true">›</span>
@@ -1309,7 +1372,7 @@ function relaysPage(){
   <span class="pprog-device-address"><span class="pprog-device-address-label">АДРЕС</span><strong class="pprog-device-address-number">${esc(deviceAddressDisplay(d.address))}</strong></span>
   <span class="directory-info pprog-device-content pprog-relay-device-content">
    <strong class="pprog-device-name${d.description?'':' is-unnamed'}">${esc(d.description||'Без названия')}</strong>
-   <span class="pprog-relay-type-row"><span class="pprog-device-type">${esc(d.typeName)}</span><span class="pprog-relay-device-count">${d.relays.length} реле</span></span>
+   <span class="pprog-relay-type-row"><span class="pprog-device-type">${esc(d.typeName)}</span><span class="pprog-relay-device-count pprog-stat-chip"><span>РЕЛЕ</span><strong>${d.relays.length}</strong></span></span>
    ${relayPreviewChips(d.relays)}
   </span>
   <span class="directory-chevron pprog-device-chevron" aria-hidden="true">›</span>
@@ -1502,7 +1565,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.11.04';
+  const LOCAL_BUILD='2026.11.11.05';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
