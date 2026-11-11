@@ -520,6 +520,46 @@ a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
  .pprog-relay-list .pprog-relay-chip{min-width:23px;padding:2px 3px}
 }
 
+
+/* Device relay inspector — composed after the approved device list.
+   Relay number is kept in the left tile; the heading is only the description. */
+.relay-card.pprog-relay-inspector{border-radius:12px;border-color:#34475e;background:#111f32}
+.pprog-relay-inspector>summary{display:block;padding:12px;min-width:0;cursor:pointer}
+.pprog-relay-main{display:grid;grid-template-columns:58px minmax(0,1fr) 17px;align-items:center;gap:12px;min-width:0}
+.pprog-relay-number{display:flex;flex-direction:column;align-items:center;justify-content:center;width:58px;min-height:64px;gap:3px;border:1px solid #3b536f;border-radius:9px;background:#1b2c43;color:#eaf3ff}
+.pprog-relay-number-label{font-size:9px;line-height:1.3;letter-spacing:.12em;color:#a6bad5;font-weight:700}
+.pprog-relay-number strong{font-size:23px;line-height:1.08;font-weight:800;font-variant-numeric:tabular-nums;color:#f3f7ff}
+.pprog-relay-heading{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;min-width:0;gap:8px}
+.pprog-relay-heading .pprog-relay-name{font-size:16px;line-height:1.32;letter-spacing:-.01em;font-weight:750;overflow-wrap:anywhere;color:#edf5ff}
+.pprog-relay-heading .pprog-relay-name.is-unnamed{font-size:14px;font-style:italic;color:#a9bbd1;font-weight:500}
+.pprog-relay-sections{font-size:12px;line-height:1.45;color:#adbed5;font-weight:500;font-variant-numeric:tabular-nums}
+.pprog-relay-sections b{font-weight:750;color:#dfebfa}
+.pprog-relay-arrow{justify-self:center;font-size:19px;line-height:1;color:#9db8d6}
+.pprog-relay-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px;min-width:0}
+.pprog-relay-field{display:flex;flex-direction:column;min-width:0;gap:6px;padding:11px 12px;background:#1b2b40;border-radius:8px;min-height:58px;text-align:left}
+.pprog-relay-field-label{font-size:10px;line-height:1.3;letter-spacing:.065em;font-weight:700;color:#9eb5d2}
+.pprog-relay-field strong{font-size:13px;line-height:1.4;font-weight:700;color:#e5effe;overflow-wrap:anywhere}
+.pprog-relay-inspector[open] .relay-body{border-top:1px solid #30465f}
+.pprog-relay-inspector>summary:hover .pprog-relay-field{background:#21334b}
+.pprog-relay-inspector>summary:focus-visible{outline:2px solid #8fbaff;outline-offset:-3px;border-radius:11px}
+@media(max-width:530px){
+ .pprog-relay-inspector>summary{padding:10px}
+ .pprog-relay-main{grid-template-columns:52px minmax(0,1fr) 16px;gap:10px}
+ .pprog-relay-number{width:52px;min-height:58px}
+ .pprog-relay-number strong{font-size:21px}
+ .pprog-relay-fields{gap:7px;margin-top:11px}
+ .pprog-relay-field{padding:10px 9px;min-height:58px;gap:5px}
+ .pprog-relay-field-label{font-size:9px}
+ .pprog-relay-field strong{font-size:12px}
+}
+@media(max-width:350px){
+ .pprog-relay-main{grid-template-columns:48px minmax(0,1fr) 14px;gap:8px}
+ .pprog-relay-number{width:48px;min-height:54px}
+ .pprog-relay-field{padding:9px 7px}
+ .pprog-relay-field strong{font-size:11.5px}
+}
+@media(prefers-reduced-motion:reduce){.pprog-relay-inspector .relay-chevron{transition:none}}
+
 </style>
 </head>
 <body>
@@ -863,6 +903,29 @@ function outputCards(items){
    return `<div class="pprog-output-card"><div class="pprog-output-header"><strong>Выход ${esc(o.id)}</strong><span>Тип выхода: ${esc(outputTypeLabel(o))}</span></div><div class="pprog-output-description">${esc(o.name||'Без описания')}</div><div class="pprog-facet-info"><span><b>Раздел:</b> ${o.partitions.length?o.partitions.map(id=>esc(id)).join(', '):'Не включён в раздел'}</span></div>${o.partitions.length?`<div class="taglist">${o.partitions.map(id=>{const p=model.partitions.find(x=>String(x.id)===String(id));return p?`<button type="button" class="tag click" data-partition="${model.partitions.indexOf(p)}">Р ${esc(id)} · ${esc(p.name)}</button>`:''}).join('')}</div>`:''}${renderInlineExtras(o.node,['Выход','Описание','Тип_выхода','Раздел'])}</div>`;
  }).join('')}</div>`;
 }
+function relayInspectorCard(r,typeLabel,programLabel){
+ const relayName=String(r.name??'').trim();
+ const programText=relayProgramDisplay(r.program)+(programLabel?' ('+programLabel+')':'');
+ const showTime=(value,def)=>controlTimeDisplay(value,def).replace(/\.0+(?= с)/,'');
+ return `<details class="relay-card pprog-relay-inspector">
+  <summary aria-label="Реле ${esc(r.id)}: ${esc(relayName||'Без описания')}. Показать привязанные разделы">
+   <span class="pprog-relay-main">
+    <span class="pprog-relay-number"><span class="pprog-relay-number-label">РЕЛЕ</span><strong>${esc(r.id)}</strong></span>
+    <span class="pprog-relay-heading"><strong class="pprog-relay-name${relayName?'':' is-unnamed'}">${esc(relayName||'Без описания')}</strong><span class="pprog-relay-sections"><b>${r.partitions.length}</b> ${ruPlural(r.partitions.length,'раздел','раздела','разделов')}</span></span>
+    <span class="relay-chevron pprog-relay-arrow" aria-hidden="true">⌄</span>
+   </span>
+   <span class="pprog-relay-fields">
+    <span class="pprog-relay-field"><span class="pprog-relay-field-label">ТИП</span><strong>${esc(typeLabel)}</strong></span>
+    <span class="pprog-relay-field"><span class="pprog-relay-field-label">ПРОГРАММА</span><strong>${esc(programText)}</strong></span>
+    <span class="pprog-relay-field"><span class="pprog-relay-field-label">ЗАДЕРЖКА</span><strong>${esc(showTime(r.delay,'0.0'))}</strong></span>
+    <span class="pprog-relay-field"><span class="pprog-relay-field-label">ВРЕМЯ УПРАВЛЕНИЯ</span><strong>${esc(showTime(r.duration,'30.0'))}</strong></span>
+   </span>
+  </summary>
+  <div class="relay-body"><div class="relay-body-heading">Привязанные разделы управления (${r.partitions.length})</div>
+   ${r.partitions.length?`<div class="relay-partitions">${([...r.partitions].sort((a,b)=>Number(a)-Number(b))).map(id=>{const p=model.partitions.find(x=>x.id===id);return `<button class="relay-partition" data-partition="${p?model.partitions.indexOf(p):''}" ${p?'':'disabled'}><span class="relay-partition-name"><strong>Раздел ${esc(id)}</strong><span>${esc(p?.name||'Название не найдено в TXT')}</span></span><span class="relay-partition-arrow">›</span></button>`}).join('')}</div>`:'<div class="dim" style="padding:12px 0">Привязки управления к разделам не указаны</div>'}
+  </div>
+ </details>`;
+}
 function relayTable(items,compact=false){
  if(!items.length)return empty('В TXT нет записей «Реле»','zap');
  return `<div class="relay-cards">${items.map(r=>{
@@ -871,6 +934,7 @@ function relayTable(items,compact=false){
    const target=r.target;
    const associatedOutput=target?.kind==='output'?target.record:null;
    const typeLabel=directType?pprogTypeLabel(directType):associatedOutput?outputTypeLabel(associatedOutput):pprogTypeLabel('');
+   if(compact)return relayInspectorCard(r,typeLabel,programLabel);
    return `<details class="relay-card"><summary><span class="relay-summary"><strong class="relay-title">Реле ${esc(r.id)}${r.name?` · ${esc(r.name)}`:''}</strong><span class="relay-params"><span><b>Тип:</b> ${esc(typeLabel)}</span><span><b>Программа:</b> ${esc(relayProgramDisplay(r.program))}${programLabel?' ('+esc(programLabel)+')':''}</span><span><b>Задержка:</b> ${esc(controlTimeDisplay(r.delay,'0.0'))}</span><span><b>Время упр.:</b> ${esc(controlTimeDisplay(r.duration,'30.0'))}</span></span></span><span class="relay-count">${r.partitions.length} разд.</span><span class="relay-chevron">⌄</span></summary><div class="relay-body"><div class="relay-body-heading">Привязанные разделы управления (${r.partitions.length})</div>${r.partitions.length?`<div class="relay-partitions">${([...r.partitions].sort((a,b)=>Number(a)-Number(b))).map(id=>{const p=model.partitions.find(x=>x.id===id);return `<button class="relay-partition" data-partition="${p?model.partitions.indexOf(p):''}" ${p?'':'disabled'}><span class="relay-partition-name"><strong>Раздел ${esc(id)}</strong><span>${esc(p?.name||'Название не найдено в TXT')}</span></span><span class="relay-partition-arrow">›</span></button>`}).join('')}</div>`:'<div class="dim" style="padding:12px 0">Привязки управления к разделам не указаны</div>'}</div></details>`;
  }).join('')}</div>`;
 }
@@ -910,7 +974,7 @@ function relaysPage(){
 function relayDevicePage(){
  const d=model.devices[relayDeviceIndex];if(!d)return relaysPage();
  return head(`${esc(d.typeName)} · адрес ${esc(d.address)}`,esc(d.description||'Записи управления PProg'),button('← К списку реле','back-relay-devices','ghost'))+
- `<div class="panel pad"><div class="panel-header"><div><h3 class="panel-title">Реле прибора (${d.relays.length})</h3></div></div>${relayTable(d.relays.map(r=>({...r,device:d})),true)}</div>`;
+ `<div class="panel pad"><div class="panel-header"><div><h3 class="panel-title">Реле прибора ${d.relays.length}</h3></div></div>${relayTable(d.relays.map(r=>({...r,device:d})),true)}</div>`;
 }
 function ruPlural(count,one,few,many){const n=Math.abs(Number(count)||0),p=n%100,q=n%10;return p>=11&&p<=14?many:q===1?one:q>=2&&q<=4?few:many;}
 function linksPage(){
@@ -931,7 +995,7 @@ function linksPage(){
    `</div></div>`;
  }).join(''):empty('Разделы не найдены'))+
  `</div><div class="panel pad"><div class="panel-header"><h3 class="panel-title">Разделы → Управление реле</h3>${pill(rLinked.length+' привязок',rLinked.length?'green':'neutral')}</div>`+
- (rLinked.length?rLinked.map(r=>relayTable([r],true)).join(''):empty('Явных привязок управления реле в TXT нет','link'))+
+ (rLinked.length?rLinked.map(r=>relayTable([r],false)).join(''):empty('Явных привязок управления реле в TXT нет','link'))+
  `<div class="notice" style="margin-top:16px">${icon('info')}<span>Локальные параметры самих приборов могут находиться в UProg и отсутствовать в текстовом экспорте PProg.</span></div></div></div>`;
 }
 function levelsPage(){return head('Уровни доступа','Нажмите на уровень для просмотра разрешённых разделов')+`<div class="access-level-list">${model.levels.map(l=>`<details class="panel pad access-level-card"><summary><span><span class="eyebrow">УРОВЕНЬ ${esc(l.id)}</span><strong>${esc(l.name)}</strong></span><span class="level-right"><span class="level-count">${l.rights.length} разделов</span><span class="level-arrow">⌄</span></span></summary><div class="level-content">${l.rights.map(r=>`<div class="list-row"><span><b>${esc(model.partitions.find(p=>p.id===r.id)?.name||'Раздел №'+r.id)}</b><div class="row-sub">Раздел №${esc(r.id)}</div></span><span class="small" style="color:#91d8b8;text-align:right">${esc(r.rights||'Не указано')}</span></div>`).join('')||empty('Полномочия не указаны')}</div></details>`).join('')||empty('Уровни доступа отсутствуют')}</div>`}
@@ -1090,7 +1154,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.10.25';
+  const LOCAL_BUILD='2026.11.10.26';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
