@@ -571,10 +571,10 @@ a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
  align-items:center;
  min-height:27px;
  padding:5px 9px;
- border-left:3px solid #e3b85d;
+ border-left:3px solid #79adff;
  border-radius:4px;
- background:#1d2a3b;
- color:#f4e7cf;
+ background:#1c3250;
+ color:#c7e0ff;
  font-size:10px;
  font-weight:800;
  letter-spacing:.085em;
@@ -621,6 +621,45 @@ a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
  .pprog-section-loops-preview .pill{padding:4px 7px;font-size:11px}
 }
 
+
+/* Section detail, compact, blue-toned rows as requested. */
+.pprog-section-detail-view{min-width:0}
+.pprog-section-detail-heading{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:8px;min-width:0}
+.pprog-section-detail-heading .pprog-section-detail-name{margin:0;font-size:clamp(24px,3vw,32px);line-height:1.23;letter-spacing:-.025em;color:#f0f5ff;overflow-wrap:anywhere}
+.pprog-section-loop-count{display:flex;gap:9px;align-items:baseline;padding:7px 0 12px;width:100%;border-bottom:1px solid #304057;font-size:13px;color:#9fb5d2;font-variant-numeric:tabular-nums}
+.pprog-section-loop-count strong{color:#dfeafb;font-weight:750}
+.pprog-section-loop-count span{color:#e1efff;font-weight:650}
+.pprog-section-loop-list{display:flex;flex-direction:column;gap:0;min-width:0}
+.pprog-section-loop-list .pprog-section-loop-row{display:grid;grid-template-columns:54px minmax(0,1fr) minmax(0,auto) 12px;align-items:center;gap:12px;width:100%;min-height:69px;margin:0;padding:9px 3px;border:0;border-bottom:1px solid #283a51;background:transparent;color:#edf3ff;text-align:left;cursor:pointer;min-width:0}
+.pprog-section-loop-list .pprog-section-loop-row:hover{background:#15243a}
+.pprog-section-loop-list .pprog-section-loop-row:active{background:#1b314e}
+.pprog-section-loop-list .pprog-section-loop-row:focus-visible{outline:2px solid #8fbaff;outline-offset:-2px;border-radius:7px}
+.pprog-section-loop-list .pprog-section-loop-row:disabled{opacity:.6;cursor:default}
+.pprog-section-loop-address{height:52px;width:54px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;border-radius:7px;border:1px solid #3a5270;background:#1c304b}
+.pprog-section-loop-address>span{font-size:9px;font-weight:700;letter-spacing:.075em;color:#a9c5e8}
+.pprog-section-loop-address strong{font-size:19px;font-weight:800;color:#f0f6ff;font-variant-numeric:tabular-nums}
+.pprog-section-loop-text{display:flex;flex-direction:column;gap:5px;justify-content:center;min-width:0;overflow-wrap:anywhere}
+.pprog-section-loop-text strong{font-size:14px;line-height:1.3;font-weight:750;color:#e9f2ff}
+.pprog-section-loop-text>span{font-size:12px;line-height:1.38;color:#b8c9e0}
+.pprog-section-loop-text>span.is-unnamed{color:#869bb6;font-style:italic}
+.pprog-section-loop-type{display:inline-flex;align-items:center;justify-content:center;max-width:145px;min-width:0;padding:5px 8px;border:1px solid #3b536d;border-radius:999px;color:#bdd7f7;background:#1c2c42;text-align:center;font-size:10px;line-height:1.3;font-weight:600;overflow-wrap:anywhere}
+.pprog-section-loop-type:empty{visibility:hidden;padding:0;border:0}
+.pprog-section-loop-chevron{justify-self:end;color:#8ea9c9;font-size:22px}
+.pprog-section-detail-return{margin-top:20px}
+@media(max-width:530px){
+ .pprog-section-detail-heading .pprog-section-detail-name{font-size:25px}
+ .pprog-section-loop-list .pprog-section-loop-row{grid-template-columns:49px minmax(0,1fr) minmax(0,auto) 10px;gap:8px;min-height:66px;padding:8px 2px}
+ .pprog-section-loop-address{height:49px;width:49px}
+ .pprog-section-loop-address strong{font-size:18px}
+ .pprog-section-loop-text strong{font-size:13px}
+ .pprog-section-loop-text>span{font-size:11.5px}
+ .pprog-section-loop-type{max-width:112px;font-size:9.5px;padding:5px 7px}
+}
+@media(max-width:360px){
+ .pprog-section-loop-list .pprog-section-loop-row{grid-template-columns:45px minmax(0,1fr) minmax(0,auto) 9px;gap:6px}
+ .pprog-section-loop-address{width:45px;height:47px}
+ .pprog-section-loop-type{max-width:92px;padding:4px 6px;font-size:9px}
+}
 </style>
 </head>
 <body>
@@ -1017,15 +1056,49 @@ function partitionsPage(){
  const isGroup=partitionsView==='groups';
  return head(isGroup?'Группы разделов':'Разделы системы',isGroup?'Группы из секции «Группы разделов» в TXT':'Выберите раздел, чтобы посмотреть его состав')+partitionsSwitch()+(isGroup?partitionGroupsPage():`<div class="cols-3">${model.partitions.map((p,i)=>`<div class="panel section-card">${sectionBadge(p.id)}<div class="section-name">${esc(p.name)}</div><div class="section-meta"><strong>${p.loops.length}</strong> ${ruPlural(p.loops.length,'шлейф','шлейфа','шлейфов')}</div><div class="taglist pprog-section-loops-preview">${sectionPreviewChips(p.loops)}</div><button class="btn sm ghost" data-partition="${i}">Открыть состав ${icon('arrow')}</button></div>`).join('')||`<div class="panel">${empty('Разделов нет')}</div>`}</div>`);
 }
-function partitionLoops(items){return items.length?`<div class="partition-loop-list">${items.map(l=>`<button class="partition-loop-card partition-loop-click" data-device="${model.devices.indexOf(l.device)}"><span class="partition-loop-head"><strong>Прибор ${esc(l.device.address)} · Шлейф ${esc(l.id)}</strong></span>${l.name?`<span class="partition-loop-description">${esc(l.name)}</span>`:''}<span class="small muted">Тип: ${esc(loopTypeLabel(l.type))}</span></button>`).join('')}</div>`:empty('В разделе нет шлейфов','list')}
+
+function sectionLoopTypeTag(loop){
+ const code=String(loop.type??'').trim();
+ if(!code||code==='0')return '';
+ let label=loopTypeLabel(code);
+ if(label==='по умолчанию'||label==='Тип отсутствует в TXT'||label.startsWith('Неизвестный тип'))return '';
+ if(code==='10'&&label.startsWith('ручной пуск ('))label='ручной пуск';
+ return label;
+}
+function partitionLoops(items){
+ if(!items.length)return empty('В разделе нет шлейфов','list');
+ const sorted=[...items].sort((a,b)=>{
+  const da=String(a.device?.address??''),db=String(b.device?.address??'');
+  return da.localeCompare(db,'ru',{numeric:true})||String(a.id??'').localeCompare(String(b.id??''),'ru',{numeric:true});
+ });
+ return '<div class="pprog-section-loop-list">'+sorted.map(l=>{
+  const address=String(l.device?.address??'').trim();
+  const index=model.devices.indexOf(l.device);
+  const tag=sectionLoopTypeTag(l);
+  const name=String(l.name??'').trim();
+  const title='Шлейф '+String(l.id??'');
+  return '<button type="button" class="pprog-section-loop-row" '+
+    (index>=0?'data-device="'+index+'" data-open-tab="loops"':'disabled')+
+    ' aria-label="'+esc(title+' · '+(name||'без названия')+' · прибор '+address)+'">'+
+    '<span class="pprog-section-loop-address"><span>АДРЕС</span><strong>'+esc(deviceAddressDisplay(address))+'</strong></span>'+
+    '<span class="pprog-section-loop-text"><strong>'+esc(title)+'</strong><span class="'+(name?'':'is-unnamed')+'">'+esc(name||'без названия')+'</span></span>'+
+    '<span class="pprog-section-loop-type">'+(tag?esc(tag):'')+'</span>'+
+    '<span class="pprog-section-loop-chevron" aria-hidden="true">›</span>'+
+  '</button>';
+ }).join('')+'</div>';
+}
 function partitionDetail(){
  const p=model.partitions[partitionIndex];
  if(!p)return partitionsPage();
- const ownOutputs=visibleOutputRows(p.outputs);const outputs=ownOutputs.length?`<div class="panel pad"><div class="panel-header"><h3 class="panel-title">Выходы в разделе (${ownOutputs.length})</h3></div>${outputCards(ownOutputs)}</div>`:'';
- const executors=p.executors.length?`<div class="panel pad"><div class="panel-header"><h3 class="panel-title">Исполнительные устройства в разделе (${p.executors.length})</h3></div><div class="partition-loop-list">${p.executors.map(unit=>`<button type="button" class="partition-loop-card partition-loop-click" data-device="${model.devices.indexOf(unit.device)}" data-open-tab="executors"><span class="partition-loop-head"><strong>Прибор ${esc(unit.device.address)} · ИУ ${esc(unit.id)}</strong></span>${unit.name?`<span class="partition-loop-description">${esc(unit.name)}</span>`:''}</button>`).join('')}</div></div>`:'';
- return `<div class="page-head pprog-section-detail-head"><div class="pprog-section-heading">${sectionBadge(p.id)}<h2 class="page-title pprog-section-detail-name">${esc(p.name)}</h2></div><div class="right">${button('Ко всем разделам','go-partitions','ghost','arrow')}</div></div>`+
- `<div class="panel pad"><div class="panel-header"><h3 class="panel-title">Шлейфы раздела (${p.loops.length})</h3></div>${partitionLoops(p.loops)}</div>`+
- outputs+executors;
+ return '<div class="pprog-section-detail-view">'+
+  '<div class="pprog-section-detail-heading">'+
+   sectionBadge(p.id)+
+   '<h2 class="page-title pprog-section-detail-name">'+esc(p.name)+'</h2>'+
+   '<div class="pprog-section-loop-count"><strong>Шлейфы раздела</strong><span>'+p.loops.length+'</span></div>'+
+  '</div>'+
+  partitionLoops(p.loops)+
+  '<div class="pprog-section-detail-return">'+button('Ко всем разделам','go-partitions','ghost','arrow')+'</div>'+
+ '</div>';
 }
 function relayPreviewChips(relays){
  // TXT relay records only. Never infer relay chips from output records.
@@ -1229,7 +1302,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.10.27';
+  const LOCAL_BUILD='2026.11.10.28';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
