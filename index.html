@@ -1009,9 +1009,8 @@ function devicesPage(){if(!model.devices.length)return head('Приборы','П
   <strong class="pprog-device-name${x.description?'':' is-unnamed'}">${esc(x.description||'Без названия')}</strong>
   <span class="pprog-device-type">${esc(x.typeName)}</span>
   <span class="pprog-device-stats">
-   <span><b>${linkedDeviceLoops(x).length}</b> ${ruPlural(linkedDeviceLoops(x).length,'шлейф','шлейфа','шлейфов')}</span>
+   <span><b>${linkedDeviceLoops(x).length}/${esc(x.physicalLoops??'—')}</b> шлейфов</span>
    <span><b>${x.relays.length}</b> реле</span>
-   <span><b>${x.outputs.length}</b> ${ruPlural(x.outputs.length,'выход','выхода','выходов')}</span>
   </span>
  </span>
  <span class="directory-chevron pprog-device-chevron" aria-hidden="true">›</span>
@@ -1503,7 +1502,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.11.03';
+  const LOCAL_BUILD='2026.11.11.04';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
