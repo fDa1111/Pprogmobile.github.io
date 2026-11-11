@@ -563,7 +563,7 @@ a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
 
 /* Section number: identical badge in cards and the opened section. */
 .section-card .pprog-section-badge,
-.pprog-section-detail-head .pprog-section-badge{
+.pprog-section-detail-heading .pprog-section-badge{
  display:inline-flex;
  align-self:flex-start;
  width:max-content;
@@ -659,6 +659,31 @@ a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
  .pprog-section-loop-list .pprog-section-loop-row{grid-template-columns:45px minmax(0,1fr) minmax(0,auto) 9px;gap:6px}
  .pprog-section-loop-address{width:45px;height:47px}
  .pprog-section-loop-type{max-width:92px;padding:4px 6px;font-size:9px}
+}
+
+/* Named-device badges: identical visual language in Devices and Relay directories.
+   Preserve the compact, address-first row and the existing two-line name clamp. */
+.pprog-device-list .pprog-device-name{
+ align-self:flex-start;
+ width:max-content;
+ max-width:100%;
+ min-width:0;
+ padding:5px 9px;
+ border-left:3px solid #79adff;
+ border-radius:5px;
+ background:#1c3250;
+ color:#e1efff;
+ line-height:1.4;
+}
+.pprog-device-list .pprog-device-name.is-unnamed{
+ color:#b1c4df;
+ background:#1a2b42;
+}
+@media(max-width:530px){
+ .pprog-device-list .pprog-device-name{
+  padding:4px 8px;
+  line-height:1.35;
+ }
 }
 </style>
 </head>
@@ -1302,7 +1327,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.10.28';
+  const LOCAL_BUILD='2026.11.10.29';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
