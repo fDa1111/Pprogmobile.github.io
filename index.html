@@ -623,7 +623,7 @@ a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
 
 
 /* Section detail, compact, blue-toned rows as requested. */
-.pprog-section-detail-view{min-width:0}
+.pprog-section-detail-view{min-width:0;padding:17px 18px 20px}
 .pprog-section-detail-heading{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:8px;min-width:0}
 .pprog-section-detail-heading .pprog-section-detail-name{margin:0;font-size:clamp(24px,3vw,32px);line-height:1.23;letter-spacing:-.025em;color:#f0f5ff;overflow-wrap:anywhere}
 .pprog-section-loop-count{display:flex;gap:9px;align-items:baseline;padding:7px 0 12px;width:100%;border-bottom:1px solid #304057;font-size:13px;color:#9fb5d2;font-variant-numeric:tabular-nums}
@@ -647,6 +647,7 @@ a:focus-visible,[tabindex]:focus-visible,.relay-card>summary:focus-visible,
 .pprog-section-loop-chevron{justify-self:end;color:#8ea9c9;font-size:22px}
 .pprog-section-detail-return{margin-top:20px}
 @media(max-width:530px){
+ .pprog-section-detail-view{padding:13px 12px 16px}
  .pprog-section-detail-heading .pprog-section-detail-name{font-size:25px}
  .pprog-section-loop-list .pprog-section-loop-row{grid-template-columns:49px minmax(0,1fr) minmax(0,auto) 10px;gap:8px;min-height:66px;padding:8px 2px}
  .pprog-section-loop-address{height:49px;width:49px}
@@ -948,7 +949,7 @@ function deviceAddressDisplay(address){
  return /^\d+$/.test(value)?value.padStart(2,'0'):(value||'—');
 }
 function deviceLoopRows(items) {
- if(!items.length)return empty('Нет шлейфов, привязанных к разделам','list');
+ if(!items.length)return empty('Шлейфов в TXT для этого прибора нет','list');
  const sorted=[...items].sort((a,b)=>String(a.id??'').localeCompare(String(b.id??''),'ru',{numeric:true}));
  return `<div class="pprog-device-loop-list">${sorted.map(l=>{
   const description=String(l.name??'').trim();
@@ -970,7 +971,7 @@ function deviceLoopRows(items) {
 function deviceHero(d){
  const title=String(d.description??'').trim();
  const summary=[
-  ['ШС',d.physicalLoops??'—'],
+  ['ШС',`${linkedDeviceLoops(d).length}/${d.physicalLoops??'—'}`],
   ['РЕЛЕ',d.relays.length],
   ['ВЫХОДЫ',d.outputs.length],
   ['ИУ',d.executors.length],
@@ -991,13 +992,13 @@ function deviceDetailPanel(d,tabs,inner) {
    <div class="pprog-device-tab-body">${inner}</div>
  </div>`;
 }
-function devicesPage(){if(!model.devices.length)return head('Приборы','Приборы, зарегистрированные в пульте')+`<div class="panel">${empty('В этом файле нет записей приборов')}</div>`;const d=model.devices[Math.max(0,Math.min(deviceIndex,model.devices.length-1))];const ownOutputs=standaloneOutputs(d);const assignedLoops=linkedDeviceLoops(d);if(deviceTab==='outputs'&&!ownOutputs.length)deviceTab=d.relays.length?'relays':'loops';const tabs=[['loops','Шлейфы',assignedLoops.length],['relays','Реле',d.relays.length],...(ownOutputs.length?[['outputs','Выходы',ownOutputs.length]]:[]),...(d.executors.length?[['executors','ИУ',d.executors.length]]:[])];let inner='';if(deviceTab==='loops')inner=deviceLoopRows(assignedLoops);if(deviceTab==='relays')inner=relayTable(d.relays.map(r=>({...r,device:d})),true);if(deviceTab==='outputs')inner=outputCards(ownOutputs);if(deviceTab==='executors')inner=executorCards(d.executors,d);if(false&&deviceTab==='details')inner=`<div class="info-grid">${fieldGrid(d.node.fields)}</div><h4 style="font-size:12px;margin:23px 0 9px">Остальные записи прибора</h4>${d.node.children.map(n=>nodeCard(n,1)).join('')||empty('Нет вложенных записей')}`;if(!deviceOpened)return head('Приборы',`Устройства в конфигурации · ${model.devices.length}`)+`<div class="panel pad device-directory pprog-device-list">${model.devices.map((x,i)=>`<button type="button" class="list-row device-directory-row pprog-device-item" data-device="${i}" aria-label="Открыть прибор адрес ${esc(x.address)}: ${esc(x.description||x.typeName)}">
+function devicesPage(){if(!model.devices.length)return head('Приборы','Приборы, зарегистрированные в пульте')+`<div class="panel">${empty('В этом файле нет записей приборов')}</div>`;const d=model.devices[Math.max(0,Math.min(deviceIndex,model.devices.length-1))];const ownOutputs=standaloneOutputs(d);const assignedLoops=linkedDeviceLoops(d);if(deviceTab==='outputs'&&!ownOutputs.length)deviceTab=d.relays.length?'relays':'loops';const tabs=[['loops','Шлейфы',`${assignedLoops.length}/${d.physicalLoops??'—'}`],['relays','Реле',d.relays.length],...(ownOutputs.length?[['outputs','Выходы',ownOutputs.length]]:[]),...(d.executors.length?[['executors','ИУ',d.executors.length]]:[])];let inner='';if(deviceTab==='loops')inner=deviceLoopRows(d.loops);if(deviceTab==='relays')inner=relayTable(d.relays.map(r=>({...r,device:d})),true);if(deviceTab==='outputs')inner=outputCards(ownOutputs);if(deviceTab==='executors')inner=executorCards(d.executors,d);if(false&&deviceTab==='details')inner=`<div class="info-grid">${fieldGrid(d.node.fields)}</div><h4 style="font-size:12px;margin:23px 0 9px">Остальные записи прибора</h4>${d.node.children.map(n=>nodeCard(n,1)).join('')||empty('Нет вложенных записей')}`;if(!deviceOpened)return head('Приборы',`Устройства в конфигурации · ${model.devices.length}`)+`<div class="panel pad device-directory pprog-device-list">${model.devices.map((x,i)=>`<button type="button" class="list-row device-directory-row pprog-device-item" data-device="${i}" aria-label="Открыть прибор адрес ${esc(x.address)}: ${esc(x.description||x.typeName)}">
  <span class="pprog-device-address"><span class="pprog-device-address-label">АДРЕС</span><strong class="pprog-device-address-number">${esc(deviceAddressDisplay(x.address))}</strong></span>
  <span class="directory-info pprog-device-content">
   <strong class="pprog-device-name${x.description?'':' is-unnamed'}">${esc(x.description||'Без названия')}</strong>
   <span class="pprog-device-type">${esc(x.typeName)}</span>
   <span class="pprog-device-stats">
-   <span><b>${esc(x.physicalLoops??'—')}</b> ${x.physicalLoops===null?'ШС (не определено)':ruPlural(x.physicalLoops,'шлейф','шлейфа','шлейфов')}</span>
+   <span><b>${linkedDeviceLoops(x).length}</b> ${ruPlural(linkedDeviceLoops(x).length,'шлейф','шлейфа','шлейфов')}</span>
    <span><b>${x.relays.length}</b> реле</span>
    <span><b>${x.outputs.length}</b> ${ruPlural(x.outputs.length,'выход','выхода','выходов')}</span>
   </span>
@@ -1275,7 +1276,7 @@ function partitionLoops(items){
 function partitionDetail(){
  const p=model.partitions[partitionIndex];
  if(!p)return partitionsPage();
- return '<div class="pprog-section-detail-view">'+
+ return '<div class="panel pprog-section-detail-view">'+
   '<div class="pprog-section-detail-heading">'+
    sectionBadge(p.id)+
    '<h2 class="page-title pprog-section-detail-name">'+esc(p.name)+'</h2>'+
@@ -1491,7 +1492,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.11.01';
+  const LOCAL_BUILD='2026.11.11.02';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
