@@ -897,8 +897,23 @@ function physicalLoopCapacity(typeId,typeName,templateCount,baseType){
  }
  return null;
 }
+// PProg type 34 «Сигнал-10»: the 110 template records contain 10 wired
+// inputs (1..10) and 100 ADDITIONAL address-zone records (20..119).
+// See reverse-engineered type catalogue, 04-config-format §8.2 / 06-config-schema.
+// Keep all 110 original records in device.loops and the global/raw TXT views.
+function isSignal10Device(device){
+ const name=norm(device.typeName).replace(/\s+/g,'').replace(/[–—‑]/g,'-');
+ return device.physicalLoops===10 && /^сигнал-?10(?:$|[^0-9])/.test(name);
+}
+function physicalDeviceLoops(device){
+ if(!isSignal10Device(device))return device.loops;
+ return device.loops.filter(loop=>{
+  const num=String(loop.id??'').trim();
+  return /^\d+$/.test(num)&&Number(num)>=1&&Number(num)<=10;
+ });
+}
 function linkedDeviceLoops(device){
- return device.loops.filter(loop=>loop.partitions.length>0);
+ return physicalDeviceLoops(device).filter(loop=>loop.partitions.length>0);
 }
 function buildModel(parsed){const section=s=>parsed.sections.find(x=>norm(x.name)===norm(s)),types=new Map();for(const n of section('Типы_приборов')?.nodes||[])if(has(n,'Тип_прибора'))types.set(lookup(n,'Тип_прибора'),n);
 const deviceDescription=node=>{const direct=lookup(node,'Описание')||lookup(node,'Название')||lookup(node,'Комментарий')||lookup(node,'Примечание');if(direct)return direct;const note=(node.children||[]).find(n=>has(n,'Описание')&&!has(n,'Шлейф')&&!has(n,'Реле')&&!has(n,'Выход')&&!has(n,'Исполнительное_устройство')&&!has(n,'Адрес'));return note?lookup(note,'Описание'):'';};
@@ -1069,7 +1084,7 @@ function deviceDetailPanel(d,tabs,inner) {
    <div class="pprog-device-tab-body">${inner}</div>
  </div>`;
 }
-function devicesPage(){if(!model.devices.length)return head('Приборы','Приборы, зарегистрированные в пульте')+`<div class="panel">${empty('В этом файле нет записей приборов')}</div>`;const d=model.devices[Math.max(0,Math.min(deviceIndex,model.devices.length-1))];const ownOutputs=standaloneOutputs(d);const assignedLoops=linkedDeviceLoops(d);if(deviceTab==='outputs'&&!ownOutputs.length)deviceTab=d.relays.length?'relays':'loops';const tabs=[['loops','Шлейфы',`${assignedLoops.length}/${d.physicalLoops??'—'}`],['relays','Реле',d.relays.length],...(ownOutputs.length?[['outputs','Выходы',ownOutputs.length]]:[]),...(d.executors.length?[['executors','ИУ',d.executors.length]]:[])];let inner='';if(deviceTab==='loops')inner=deviceLoopRows(d.loops);if(deviceTab==='relays')inner=relayTable(d.relays.map(r=>({...r,device:d})),true);if(deviceTab==='outputs')inner=outputCards(ownOutputs);if(deviceTab==='executors')inner=executorCards(d.executors,d);if(false&&deviceTab==='details')inner=`<div class="info-grid">${fieldGrid(d.node.fields)}</div><h4 style="font-size:12px;margin:23px 0 9px">Остальные записи прибора</h4>${d.node.children.map(n=>nodeCard(n,1)).join('')||empty('Нет вложенных записей')}`;if(!deviceOpened)return head('Приборы',`Устройства в конфигурации · ${model.devices.length}`)+`<div class="panel pad device-directory pprog-device-list">${model.devices.map((x,i)=>`<button type="button" class="list-row device-directory-row pprog-device-item" data-device="${i}" aria-label="Открыть прибор адрес ${esc(x.address)}: ${esc(x.description||x.typeName)}">
+function devicesPage(){if(!model.devices.length)return head('Приборы','Приборы, зарегистрированные в пульте')+`<div class="panel">${empty('В этом файле нет записей приборов')}</div>`;const d=model.devices[Math.max(0,Math.min(deviceIndex,model.devices.length-1))];const ownOutputs=standaloneOutputs(d);const assignedLoops=linkedDeviceLoops(d);if(deviceTab==='outputs'&&!ownOutputs.length)deviceTab=d.relays.length?'relays':'loops';const tabs=[['loops','Шлейфы',`${assignedLoops.length}/${d.physicalLoops??'—'}`],['relays','Реле',d.relays.length],...(ownOutputs.length?[['outputs','Выходы',ownOutputs.length]]:[]),...(d.executors.length?[['executors','ИУ',d.executors.length]]:[])];let inner='';if(deviceTab==='loops')inner=deviceLoopRows(physicalDeviceLoops(d));if(deviceTab==='relays')inner=relayTable(d.relays.map(r=>({...r,device:d})),true);if(deviceTab==='outputs')inner=outputCards(ownOutputs);if(deviceTab==='executors')inner=executorCards(d.executors,d);if(false&&deviceTab==='details')inner=`<div class="info-grid">${fieldGrid(d.node.fields)}</div><h4 style="font-size:12px;margin:23px 0 9px">Остальные записи прибора</h4>${d.node.children.map(n=>nodeCard(n,1)).join('')||empty('Нет вложенных записей')}`;if(!deviceOpened)return head('Приборы',`Устройства в конфигурации · ${model.devices.length}`)+`<div class="panel pad device-directory pprog-device-list">${model.devices.map((x,i)=>`<button type="button" class="list-row device-directory-row pprog-device-item" data-device="${i}" aria-label="Открыть прибор адрес ${esc(x.address)}: ${esc(x.description||x.typeName)}">
  <span class="pprog-device-address"><span class="pprog-device-address-label">АДРЕС</span><strong class="pprog-device-address-number">${esc(deviceAddressDisplay(x.address))}</strong></span>
  <span class="directory-info pprog-device-content">
   <strong class="pprog-device-name${x.description?'':' is-unnamed'}">${esc(x.description||'Без названия')}</strong>
@@ -1568,7 +1583,7 @@ if ('serviceWorker' in navigator && location.protocol === 'https:') {
 /* Клиентский механизм обновления. Проверка через version.json минует кеш SW. */
 (function(){
   'use strict';
-  const LOCAL_BUILD='2026.11.11.07';
+  const LOCAL_BUILD='2026.11.11.08';
   let checking=false;
   const banner=document.createElement('div');
   banner.id='pprogUpdateNotice';
